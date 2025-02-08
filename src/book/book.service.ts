@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Book } from './entities/book.entity';
@@ -13,8 +18,31 @@ export class BookService {
   ) {}
 
   async create(createBookDto: CreateBookDto) {
-    const newBook = await this.bookModel.create(createBookDto);
-    return newBook;
+    try {
+      // Verificar si el libro ya existe
+      const existingBook = await this.bookModel.findOne({
+        isbn: createBookDto.isbn,
+      });
+
+      // Si el libro ya existe, lanzamos una excepción de conflicto
+      if (existingBook) {
+        throw new ConflictException(
+          `El libro con ISBN '${createBookDto.isbn}' ya existe.`,
+        );
+      }
+
+      // Si el libro no existe, lo creamos
+      const newBook = await this.bookModel.create(createBookDto);
+      return { ok: true, resultado: newBook };
+    } catch (error) {
+      // Si el error es un ConflictException, lo relanzamos directamente
+      if (error instanceof ConflictException) {
+        throw error;
+      }
+
+      // Capturamos errores inesperados
+      throw new InternalServerErrorException('Error insertando libro');
+    }
   }
 
   async findAll() {
@@ -24,6 +52,9 @@ export class BookService {
 
   async findOne(id: string) {
     const resultado = await this.bookModel.findById(id);
+    if (!resultado) {
+      throw new NotFoundException(`ID '${id}' de libro no encontrado`);
+    }
     return resultado;
   }
 

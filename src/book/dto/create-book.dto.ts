@@ -4,16 +4,11 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
-  Validate,
 } from 'class-validator';
-import { isValid as isValidISBN } from 'isbn-utils';
 
 export class CreateBookDto {
   @IsString({ message: 'El ISBN debe ser un texto' })
   @IsNotEmpty({ message: 'El ISBN es obligatorio' })
-  @Validate(isValidISBN, {
-    message: 'El ISBN no es válido',
-  })
   readonly isbn: string;
   @IsString({ message: 'El título debe ser un texto' })
   @IsNotEmpty({ message: 'El título es obligatorio' })
