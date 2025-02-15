@@ -17,6 +17,7 @@ export class BookService {
     private readonly bookModel: Model<Book>,
   ) {}
 
+  // Servicio de inserción de nuevos libros
   async create(createBookDto: CreateBookDto) {
     try {
       // Verificar si el libro ya existe
@@ -37,17 +38,25 @@ export class BookService {
     } catch (error) {
       // Si el error es un ConflictException, lo relanzamos directamente
       if (error instanceof ConflictException) {
-        throw error;
+        throw new ConflictException(error.message);
+      } else {
+        // Capturamos errores inesperados
+        throw new InternalServerErrorException('Error insertando libro');
       }
-
-      // Capturamos errores inesperados
-      throw new InternalServerErrorException('Error insertando libro');
     }
   }
 
+  // Servicio de búsqueda de todos los libros
   async findAll() {
-    const resultado = await this.bookModel.find();
-    return resultado;
+    try {
+      const resultado = await this.bookModel.find();
+      return resultado || [];
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error inesperado buscando libros',
+      );
+    }
   }
 
   async findOne(id: string) {
@@ -60,22 +69,34 @@ export class BookService {
 
   async findByIsbn(isbn: string) {
     const resultado = await this.bookModel.findOne({ isbn });
+    if (!resultado) {
+      throw new NotFoundException(`ISBN '${isbn}' de libro no encontrado`);
+    }
     return resultado;
   }
 
   async findByTitle(title: string) {
     const resultado = await this.bookModel.find({ title });
-    return resultado;
+    if (!resultado) {
+      throw new NotFoundException(`Título '${title}' de libro no encontrado`);
+    }
+    return resultado || [];
   }
 
   async findByAuthor(author: string) {
     const resultado = await this.bookModel.find({ author });
-    return resultado;
+    if (!resultado) {
+      throw new NotFoundException(`Autor '${author}' de libro no encontrado`);
+    }
+    return resultado || [];
   }
 
   async findByGender(gender: string) {
     const resultado = await this.bookModel.find({ gender });
-    return resultado;
+    if (!resultado) {
+      throw new NotFoundException(`Género '${gender}' de libro no encontrado`);
+    }
+    return resultado || [];
   }
 
   async update(id: string, updateBookDto: UpdateBookDto) {
@@ -89,6 +110,9 @@ export class BookService {
 
   async remove(id: string) {
     const resultado = await this.bookModel.findByIdAndDelete(id);
+    if (!resultado) {
+      throw new NotFoundException(`ID '${id}' de libro no encontrado`);
+    }
     return resultado;
   }
 }
