@@ -29,8 +29,28 @@ export class BookController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findById(@Param('id') id: string) {
     return this.bookService.findById(id);
+  }
+
+  @Get('search/:isbn')
+  findByIsbn(@Param('isbn') isbn: string) {
+    return this.bookService.findByIsbn(isbn);
+  }
+
+  @Get('search/title/:title')
+  findByTitle(@Param('title') title: string) {
+    return this.bookService.findByTitle(title);
+  }
+
+  @Get('search/author/:author')
+  findByAuthor(@Param('author') author: string) {
+    return this.bookService.findByAuthor(author);
+  }
+
+  @Get('search/gender/:gender')
+  findByGender(@Param('gender') gender: string) {
+    return this.bookService.findByGender(gender);
   }
 
   @Patch(':id')
