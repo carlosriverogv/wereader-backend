@@ -13,7 +13,7 @@ import { UpdateBookDto } from './dto/update-book.dto';
 @Injectable()
 export class BookService {
   constructor(
-    @InjectModel('books')
+    @InjectModel('book')
     private readonly bookModel: Model<Book>,
   ) {}
 
