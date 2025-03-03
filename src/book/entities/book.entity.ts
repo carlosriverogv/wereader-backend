@@ -1,6 +1,7 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
+@Schema()
 export class Book extends Document {
   @Prop({
     required: true,
@@ -27,21 +28,21 @@ export class Book extends Document {
   epubUrl: string;
 
   @Prop({ required: false }) // URL de la portada (opcional si extraisgo del EPUB)
-  coverUrl: string;
+  coverUrl?: string;
 
   @Prop({ required: true }) // Genero del libro (opcional)
   gender: string;
 
-  @Prop({ required: false }) // Fecha de publicación del libro (opcional)
-  datePublished: Date;
+  @Prop({ required: false, type: Date }) // Fecha de publicación del libro (opcional)
+  datePublished?: Date;
 
   @Prop({ required: false }) // Sinopsis del libro (opcional)
-  synopsis: string;
+  synopsis?: string;
 
   @Prop({ required: true }) // Se puede compartir el libro
   shareable: boolean;
 
-  @Prop({ default: Date.now })
+  @Prop({ type: Date, default: Date.now })
   dateCreation: Date; // Fecha de alta del libro.
 }
 

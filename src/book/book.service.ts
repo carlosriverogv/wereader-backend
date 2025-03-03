@@ -20,7 +20,7 @@ export class BookService {
   /**
    * @description Servicio de inserción de nuevos libros
    * @param createBookDto - Datos del libro a insertar
-   * @returns {Promise<Book>} - Libro insertado
+   * @returns {Promise<{ ok: boolean; resultado: Book }>} - Libro insertado
    * @throws ConflictException - Si el libro ya existe
    * @throws InternalServerErrorException - Si ocurre un error inesperado
    */
@@ -29,9 +29,11 @@ export class BookService {
   ): Promise<{ ok: boolean; resultado: Book }> {
     try {
       // Verificar si el libro ya existe
-      const existingBook = await this.bookModel.findOne({
-        isbn: createBookDto.isbn,
-      });
+      const existingBook = await this.bookModel
+        .findOne({
+          isbn: createBookDto.isbn,
+        })
+        .exec();
 
       // Si el libro ya existe, lanzamos una excepción de conflicto
       if (existingBook) {
@@ -41,15 +43,21 @@ export class BookService {
       }
 
       // Si el libro no existe, lo creamos
-      const newBook = await this.bookModel.create(createBookDto);
+      const newBook = new this.bookModel(createBookDto);
+
+      // Guardamos el libro en la base de datos
+      await newBook.save();
+
       return { ok: true, resultado: newBook };
-    } catch (error) {
+    } catch (error: any) {
       // Si el error es un ConflictException, lo relanzamos directamente
       if (error instanceof ConflictException) {
-        throw new ConflictException(error.message);
+        throw error;
       } else {
         // Capturamos errores inesperados
-        throw new InternalServerErrorException('Error insertando libro');
+        throw new InternalServerErrorException(
+          'Error inesperado creando el libro',
+        );
       }
     }
   }
