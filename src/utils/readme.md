@@ -12,16 +12,25 @@ Comando: npm install class-validator
 Class Transformer
 Comando: npm install class-transformer
 
-Módulo de JWT
-Comando: npm install @nestjs/jwt
-
 TS Node
 Comando: npm install -g ts-node
 Descripción: Permite ejecutar archivos .ts directamente sin necesidad de compilarlos a .js
 
+Gestión de sesiones y seguridad ------------------
+
+Módulo de JWT
+Comando: npm install @nestjs/jwt
+
+bcrypt
+Comando: npm install bcrypt
+Descripción: Gestión de la encriptación de contraseñas
+
 LANZAR EL PROYECTO -------------------------------
 cd ./we-reader
 npm run start:dev
+
+
+Limpiar cahé eslint: npx eslint --fix
 
 RESET Database -----------------------------------
 

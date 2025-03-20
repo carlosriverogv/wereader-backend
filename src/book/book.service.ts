@@ -56,7 +56,7 @@ export class BookService {
       } else {
         // Capturamos errores inesperados
         throw new InternalServerErrorException(
-          'Error inesperado creando el libro',
+          'Error inesperado creando el libro: ' + error,
         );
       }
     }
@@ -71,10 +71,9 @@ export class BookService {
     try {
       const resultado = await this.bookModel.find();
       return resultado || [];
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new InternalServerErrorException(
-        'Error inesperado buscando libros',
+        'Error inesperado buscando libros: ' + error,
       );
     }
   }
@@ -98,7 +97,7 @@ export class BookService {
         throw new NotFoundException(error.message);
       } else {
         throw new InternalServerErrorException(
-          `Error inesperado buscando libro con ID '${id}'`,
+          `Error inesperado buscando libro con ID '${id}': ` + error,
         );
       }
     }
@@ -123,7 +122,7 @@ export class BookService {
         throw new NotFoundException(error.message);
       } else {
         throw new InternalServerErrorException(
-          `Error inesperado buscando libro con ISBN '${isbn}'`,
+          `Error inesperado buscando libro con ISBN '${isbn}': ` + error,
         );
       }
     }
@@ -139,10 +138,9 @@ export class BookService {
     try {
       const resultado = await this.bookModel.find({ title });
       return resultado || [];
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new InternalServerErrorException(
-        `Error inesperado buscando libros con Título '${title}'`,
+        `Error inesperado buscando libros con Título '${title}': ` + error,
       );
     }
   }
@@ -158,10 +156,9 @@ export class BookService {
     try {
       const resultado = await this.bookModel.find({ author });
       return resultado || [];
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new InternalServerErrorException(
-        `Error inesperado buscando libros con Autor '${author}'`,
+        `Error inesperado buscando libros con Autor '${author}': ` + error,
       );
     }
   }
@@ -176,10 +173,9 @@ export class BookService {
     try {
       const resultado = await this.bookModel.find({ gender });
       return resultado || [];
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new InternalServerErrorException(
-        `Error inesperado buscando libros con Género '${gender}'`,
+        `Error inesperado buscando libros con Género '${gender}': ` + error,
       );
     }
   }
@@ -208,7 +204,7 @@ export class BookService {
         throw new NotFoundException(error.message);
       } else {
         throw new InternalServerErrorException(
-          `Error inesperado actualizando el libro con ID '${id}'`,
+          `Error inesperado actualizando el libro con ID '${id}': ` + error,
         );
       }
     }
@@ -233,7 +229,7 @@ export class BookService {
         throw new NotFoundException(error.message);
       } else {
         throw new InternalServerErrorException(
-          `Error inesperado borrando el libro con ID '${id}'`,
+          `Error inesperado borrando el libro con ID '${id}': ` + error,
         );
       }
     }

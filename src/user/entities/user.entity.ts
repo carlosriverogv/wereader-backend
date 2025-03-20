@@ -5,6 +5,14 @@ import { Document } from 'mongoose';
 export class User extends Document {
   @Prop({
     required: true,
+    minlength: 3,
+    maxlength: 25,
+    unique: true,
+  })
+  tag: string;
+
+  @Prop({
+    required: true,
     minlength: 2,
     maxlength: 100,
   })
@@ -27,13 +35,15 @@ export class User extends Document {
     required: true,
     minlength: 10,
     maxlength: 100,
+    unique: true,
   })
   email: string;
 
   @Prop({
     required: true,
     minlength: 8,
-    maxlength: 50,
+    maxlength: 60,
+    select: false,
   })
   password: string;
 
@@ -42,14 +52,14 @@ export class User extends Document {
     minlength: 2,
     maxlength: 100,
   })
-  genderFav: string;
+  genderFav?: string;
 
   @Prop({
     required: false,
     minlength: 2,
     maxlength: 100,
   })
-  authorFav: string;
+  authorFav?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

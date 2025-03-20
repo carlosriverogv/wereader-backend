@@ -10,6 +10,17 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
+  @IsString({ message: 'El tag debe ser un texto' })
+  @IsNotEmpty({ message: 'El tag es obligatorio' })
+  @MinLength(3, { message: 'El tag debe tener al menos 3 caracteres' })
+  @MaxLength(25, { message: 'El tag no puede superar los 25 caracteres' })
+  // Debe empezar por @, solo letras(minúsculas) y números y no puede tener espacios ni caracteres especiales
+  @Matches(/^@[a-z0-9]+$/, {
+    message:
+      'Solo letras(minúsculas) y números, y no puede tener espacios ni caracteres especiales',
+  })
+  tag: string;
+
   @IsString({ message: 'El nombre debe ser un texto' })
   @IsNotEmpty({ message: 'El nombre es obligatorio' })
   @MinLength(2, { message: 'El nombre debe tener al menos 2 caracteres' })
@@ -35,8 +46,8 @@ export class CreateUserDto {
 
   @IsNotEmpty({ message: 'La contraseña es obligatoria' })
   @MinLength(8, { message: 'La contraseña debe tener al menos 8 caracteres' })
-  @MaxLength(50, {
-    message: 'La contraseña no puede superar los 50 caracteres',
+  @MaxLength(60, {
+    message: 'La contraseña no puede superar los 60 caracteres',
   })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/, {
     message:
