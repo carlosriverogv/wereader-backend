@@ -25,15 +25,25 @@ bcrypt
 Comando: npm install bcrypt
 Descripción: Gestión de la encriptación de contraseñas
 
+swagger
+Comando: npm install --save @nestjs/swagger swagger-ui-express
+Descripción: Pruebas y documentación
+URL Doc: http://localhost:3000/api/docs
+
 LANZAR EL PROYECTO -------------------------------
 cd ./we-reader
 npm run start:dev
+http://localhost:3000
 
-
-Limpiar cahé eslint: npx eslint --fix
 
 RESET Database -----------------------------------
 
 BOOK MODEL
 cd ./we-reader
 ts-node src/database/seed-books.ts
+
+USER MODEL
+cd ./we-reader
+ts-node src/database/seed-users.ts
+
+Limpiar caché eslint: npx eslint --fix

@@ -42,6 +42,33 @@ const books = [
     shareable: true,
     dateCreation: new Date(),
   },
+  {
+    isbn: '978-84-675-4323-5',
+    title: 'La historia interminable',
+    author: 'Michael Ende',
+    price: 18.5,
+    epubUrl: 'https://example.com/books/la-historia-interminable.epub',
+    coverUrl: 'https://example.com/covers/la-historia-interminable.jpg',
+    gender: 'Fantasía',
+    datePublished: new Date('1979-09-01T00:00:00.000Z'),
+    synopsis:
+      'Un libro mágico que transporta a Bastian a un mundo de fantasía...',
+    shareable: true,
+    dateCreation: new Date(),
+  },
+  {
+    isbn: '978-84-450-7762-6',
+    title: 'Veinte mil leguas de viaje submarino',
+    author: 'Julio Verne',
+    price: 15.99,
+    epubUrl: 'https://example.com/books/veinte-mil-leguas.epub',
+    coverUrl: 'https://example.com/covers/veinte-mil-leguas.jpg',
+    gender: 'Fantasía',
+    datePublished: new Date('1870-01-01T00:00:00.000Z'),
+    synopsis: 'Una expedición en el Nautilus con el enigmático Capitán Nemo...',
+    shareable: true,
+    dateCreation: new Date(),
+  },
   // Puedes agregar más libros aquí...
 ];
 

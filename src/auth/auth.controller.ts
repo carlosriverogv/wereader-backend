@@ -3,7 +3,9 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Autenticación')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -18,6 +20,7 @@ export class AuthController {
    * @returns El token de autenticación
    */
   @Post('login')
+  @ApiOperation({ summary: 'Iniciar sesión' })
   async login(@Body() loginDto: LoginDto) {
     const token = await this.authService.validateUser(
       loginDto.email,
@@ -33,6 +36,7 @@ export class AuthController {
    * @returns El usuario
    */
   @Post('register')
+  @ApiOperation({ summary: 'Registrar un usuario' })
   async register(@Body() createUserDto: CreateUserDto) {
     const user = await this.userService.create(createUserDto);
 
