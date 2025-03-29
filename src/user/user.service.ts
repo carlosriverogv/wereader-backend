@@ -42,8 +42,9 @@ export class UserService {
 
       return isMatch ? user : undefined;
     } catch (error) {
-      console.error('Error al comparar contraseñas:', error);
-      return undefined;
+      throw new InternalServerErrorException(
+        'Error inesperado buscando el usuario: ' + error,
+      );
     }
   }
 
@@ -107,6 +108,31 @@ export class UserService {
       const user = await this.userModel.findOne({ tag }).exec();
       if (!user) {
         throw new NotFoundException(`El usuario con tag '${tag}' no existe.`);
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException(
+          'Error inesperado buscando el usuario: ' + error,
+        );
+      }
+    }
+  }
+
+  /**
+   * Servicio para obtener el perfil del usuario autenticado
+   * @param userId - ID del usuario
+   * @returns {Promise<User>} - El perfil del usuario
+   * @throws NotFoundException - Si el usuario no existe
+   * @throws InternalServerErrorException - Si ocurre un error inesperado
+   */
+  async getProfile(userId: string): Promise<User> {
+    try {
+      const user = await this.userModel.findById(userId).exec();
+      if (!user) {
+        throw new NotFoundException(`El usuario con ID '${userId}' no existe.`);
       }
       return user;
     } catch (error) {

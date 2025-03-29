@@ -1,7 +1,17 @@
-import { Controller, Get, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { User } from './entities/user.entity';
+import { RequestWithUser } from 'src/auth/interfaces/request-with-user.interface';
 
 @ApiTags('Usuarios')
 @Controller('user')
@@ -15,11 +25,15 @@ export class UserController {
   // }
 
   @UseGuards(AuthGuard)
-  @Get()
+  @Get('profile')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Listar todos los usuarios' })
-  findAll() {
-    return this.userService.findAll();
+  @ApiOperation({ summary: 'Obtener perfil del usuario autenticado' })
+  async getProfile(@Request() req: RequestWithUser): Promise<User> {
+    const userId = req.user.sub;
+    if (!userId) {
+      throw new UnauthorizedException('El token no contiene un userId');
+    }
+    return this.userService.getProfile(req.user.sub);
   }
 
   @UseGuards(AuthGuard)

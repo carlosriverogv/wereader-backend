@@ -6,8 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  UsePipes,
-  ValidationPipe,
   UseGuards,
 } from '@nestjs/common';
 import { BookService } from './book.service';
@@ -25,7 +23,6 @@ export class BookController {
   @UseGuards(AuthGuard)
   @Post()
   @ApiOperation({ summary: 'Añadir un nuevo libro' })
-  @UsePipes(ValidationPipe)
   create(@Body() createBookDto: CreateBookDto) {
     return this.bookService.create(createBookDto);
   }
@@ -75,7 +72,6 @@ export class BookController {
   @UseGuards(AuthGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Actualizar un libro' })
-  @UsePipes(ValidationPipe)
   update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
     return this.bookService.update(id, updateBookDto);
   }

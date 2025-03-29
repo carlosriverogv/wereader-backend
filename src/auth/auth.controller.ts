@@ -26,7 +26,11 @@ export class AuthController {
       loginDto.email,
       loginDto.password,
     );
-    return { ok: true, resultado: token };
+    return {
+      success: true,
+      message: 'Inicio de sesión exitoso',
+      token, // Token JWT generado
+    };
   }
 
   /**
@@ -38,8 +42,8 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: 'Registrar un usuario' })
   async register(@Body() createUserDto: CreateUserDto) {
+    // Crear el usuario
     const user = await this.userService.create(createUserDto);
-
-    return { ok: true, resultado: user };
+    return { ok: true, user };
   }
 }
