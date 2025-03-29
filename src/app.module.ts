@@ -5,6 +5,7 @@ import { BookModule } from './book/book.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { LibraryModule } from './library/library.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
     MongooseModule.forRoot('mongodb://127.0.0.1/wereader'),
     UserModule,
     AuthModule,
+    LibraryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
