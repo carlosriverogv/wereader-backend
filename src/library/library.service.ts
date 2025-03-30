@@ -85,7 +85,7 @@ export class LibraryService {
   }
 
   /**
-   * Añadir un libro a la biblioteca del usuario
+   * Añadir un libro a la biblioteca del usuario autenticado
    * @param idUser El ID del usuario
    * @param addBookToLibraryDto Los datos del libro a añadir
    * @description Añadir un libro a la biblioteca del usuario
