@@ -18,7 +18,7 @@ export class UserService {
   ) {}
 
   /**
-   * Busca un usuario por su email y password
+   * Busca un usuario por su email y password (LOGIN)
    * @param email El email del usuario buscado
    * @param password La contraseña del usuario buscado
    * @description Busca un usuario por su email y password
@@ -49,7 +49,7 @@ export class UserService {
   }
 
   /**
-   * Servicio de creación de nuevos usuarios
+   * Servicio de creación de nuevos usuarios (REGISTRO)
    * @param createUserDto - Datos del usuario a insertar
    * @description Servicio de creación de nuevos usuarios
    * @returns {Promise<{ ok: boolean; resultado: User }>} - Usuario insertado
@@ -99,10 +99,12 @@ export class UserService {
     }
   }
 
-  findAll() {
-    return `This action returns all user`;
-  }
-
+  /**
+   * Busca un usuario por su tag
+   * @param tag El tag del usuario buscado
+   * @description Busca un usuario por su tag
+   * @returns El usuario en caso de encontrarlo, undefined en caso contrario
+   */
   async findByTag(tag: string): Promise<User> {
     try {
       const user = await this.userModel.findOne({ tag }).exec();
@@ -128,7 +130,7 @@ export class UserService {
    * @throws NotFoundException - Si el usuario no existe
    * @throws InternalServerErrorException - Si ocurre un error inesperado
    */
-  async getProfile(userId: string): Promise<User> {
+  async findProfileById(userId: string): Promise<User> {
     try {
       const user = await this.userModel.findById(userId).exec();
       if (!user) {
@@ -150,7 +152,30 @@ export class UserService {
   //   return `This action updates a #${id} user`;
   // }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  /**
+   * Elimina un usuario por ID
+   * @param id - ID del usuario a eliminar
+   * @returns {Promise<{ ok: boolean; message: string; result: User }>} - Resultado de la eliminación
+   * @throws NotFoundException - Si el usuario no existe
+   * @throws InternalServerErrorException - Si ocurre un error inesperado
+   */
+  async remove(
+    id: string,
+  ): Promise<{ ok: boolean; message: string; result: User }> {
+    try {
+      const result = await this.userModel.findByIdAndDelete(id).exec();
+      if (!result) {
+        throw new NotFoundException(`El usuario con ID '${id}' no existe.`);
+      }
+      return { ok: true, message: 'Usuario eliminado correctamente', result };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException(
+          'Error inesperado eliminando el usuario: ' + error,
+        );
+      }
+    }
   }
 }
