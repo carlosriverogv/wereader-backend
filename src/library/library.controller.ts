@@ -1,29 +1,58 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+  UnauthorizedException,
+  Param,
+} from '@nestjs/common';
 import { LibraryService } from './library.service';
 import { CreateLibraryDto } from './dto/create-library.dto';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RequestWithUser } from 'src/auth/interfaces/request-with-user.interface';
+import { Library } from './entities/library.entity';
 
 @Controller('library')
 export class LibraryController {
   constructor(private readonly libraryService: LibraryService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Crear una biblioteca nueva' })
-  create(@Body() createLibraryDto: CreateLibraryDto) {
-    return this.libraryService.create(createLibraryDto);
+  async create(@Body() createLibraryDto: CreateLibraryDto) {
+    return await this.libraryService.create(createLibraryDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.libraryService.findAll();
+  // @UseGuards(AuthGuard)
+  // @Post()
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Añadir un libro a la biblioteca' })
+  // async addBook(@Body() createLibraryDto: CreateLibraryDto) {
+  //   return await this.libraryService.addBook(createLibraryDto);
   // }
 
   @UseGuards(AuthGuard)
-  @Get('mylibrary/:idUser')
-  @ApiOperation({ summary: 'Buscar la biblioteca del usuario' })
-  findMyLibrary(@Param('idUser') idUser: string) {
-    return this.libraryService.findByUserOwner(idUser);
+  @Get('mylibrary')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener la biblioteca del usuario autenticado' })
+  async findMyLibrary(@Request() req: RequestWithUser): Promise<Library> {
+    const userId = req.user.sub;
+    if (!userId) {
+      throw new UnauthorizedException('El token no contiene un userId');
+    }
+    return await this.libraryService.findByOwnerId(userId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get(':idOwner')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Obtener la biblioteca por ID de usuario' })
+  async findByOwnerId(@Param('idOwner') idOwner: string): Promise<Library> {
+    return await this.libraryService.findByOwnerId(idOwner);
   }
 
   // @Get(':id')

@@ -48,12 +48,12 @@ export class LibraryService {
     }
   }
 
-  // BUscar la biblioteca de un usuario
-  async findByUserOwner(idUser: string): Promise<Library> {
+  // Buscar la biblioteca de un usuario
+  async findByOwnerId(idUser: string): Promise<Library> {
     const library = await this.libraryModel
       .findOne({ idUser })
       .populate('books') // Obtener la lista de libros
-      .populate('idUser') // Obtener los datos del usuario
+      //.populate('idUser') // Obtener los datos del usuario
       .exec();
 
     if (!library) {
