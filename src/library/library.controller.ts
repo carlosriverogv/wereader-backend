@@ -7,6 +7,7 @@ import {
   Request,
   UnauthorizedException,
   Param,
+  Patch,
 } from '@nestjs/common';
 import { LibraryService } from './library.service';
 import { CreateLibraryDto } from './dto/create-library.dto';
@@ -14,6 +15,7 @@ import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RequestWithUser } from 'src/auth/interfaces/request-with-user.interface';
 import { Library } from './entities/library.entity';
+import { AddBookToLibraryDto } from './dto/addbook-library.dto';
 
 @Controller('library')
 export class LibraryController {
@@ -53,6 +55,24 @@ export class LibraryController {
   @ApiOperation({ summary: 'Obtener la biblioteca por ID de usuario' })
   async findByOwnerId(@Param('idOwner') idOwner: string): Promise<Library> {
     return await this.libraryService.findByOwnerId(idOwner);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('addbook')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Añadir un libro a la biblioteca' })
+  async addBook(
+    @Request() req: RequestWithUser,
+    @Body() addBookToLibraryDto: AddBookToLibraryDto,
+  ): Promise<Library> {
+    const userId = req.user.sub;
+    if (!userId) {
+      throw new UnauthorizedException('El token no contiene un userId');
+    }
+    return await this.libraryService.addBookToLibrary(
+      userId,
+      addBookToLibraryDto,
+    );
   }
 
   // @Get(':id')

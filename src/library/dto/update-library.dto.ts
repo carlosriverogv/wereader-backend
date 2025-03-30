@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/swagger';
-import { CreateLibraryDto } from './create-library.dto';
+import { AddBookToLibraryDto } from './addbook-library.dto';
 
-export class UpdateLibraryDto extends PartialType(CreateLibraryDto) {}
+export class UpdateLibraryDto extends PartialType(AddBookToLibraryDto) {}

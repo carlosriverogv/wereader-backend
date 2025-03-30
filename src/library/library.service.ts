@@ -1,15 +1,24 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateLibraryDto } from './dto/create-library.dto';
 import { UpdateLibraryDto } from './dto/update-library.dto';
 import { Library } from './entities/library.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Book } from 'src/book/entities/book.entity';
+import { AddBookToLibraryDto } from './dto/addbook-library.dto';
 
 @Injectable()
 export class LibraryService {
   constructor(
     @InjectModel('library')
     private readonly libraryModel: Model<Library>,
+    @InjectModel('book')
+    private readonly bookModel: Model<Book>,
   ) {}
 
   /**
@@ -48,21 +57,93 @@ export class LibraryService {
     }
   }
 
-  // Buscar la biblioteca de un usuario
+  /**
+   * Obtener la biblioteca por ID de usuario
+   * @param idUser El ID del usuario
+   * @description Obtener la biblioteca por ID de usuario
+   * @returns {Promise<Library>} La biblioteca del usuario
+   * @throws InternalServerErrorException Si no se encuentra la biblioteca
+   */
   async findByOwnerId(idUser: string): Promise<Library> {
-    const library = await this.libraryModel
-      .findOne({ idUser })
-      .populate('books') // Obtener la lista de libros
-      //.populate('idUser') // Obtener los datos del usuario
-      .exec();
-
-    if (!library) {
+    try {
+      const library = await this.libraryModel
+        .findOne({ idUser })
+        .populate('books') // Obtener la lista de libros
+        //.populate('idUser') // Obtener los datos del usuario
+        .exec();
+      if (!library) {
+        throw new InternalServerErrorException(
+          'No se encontró la biblioteca del usuario',
+        );
+      }
+      return library;
+    } catch (error) {
       throw new InternalServerErrorException(
-        'No se encontró la biblioteca del usuario',
+        'Error inesperado buscando la biblioteca: ' + error,
       );
     }
+  }
 
-    return library;
+  /**
+   * Añadir un libro a la biblioteca del usuario
+   * @param idUser El ID del usuario
+   * @param addBookToLibraryDto Los datos del libro a añadir
+   * @description Añadir un libro a la biblioteca del usuario
+   * @returns {Promise<Library>} La biblioteca actualizada
+   * @throws NotFoundException Si no se encuentra la biblioteca o el libro
+   * @throws ConflictException Si el libro ya está en la biblioteca
+   * @throws InternalServerErrorException Si ocurre un error inesperado
+   */
+  async addBookToLibrary(
+    idUser: string,
+    addBookToLibraryDto: AddBookToLibraryDto,
+  ): Promise<Library> {
+    try {
+      const bookId = addBookToLibraryDto.bookId;
+
+      // Buscar la biblioteca del usuario
+      const library = await this.findByOwnerId(idUser);
+      if (!library) {
+        throw new NotFoundException('No se encontró la biblioteca del usuario');
+      }
+
+      // Buscar el libro por ID
+      const book = await this.bookModel.findById(bookId).exec();
+      if (!book) {
+        throw new NotFoundException('No se encontró el libro');
+      }
+
+      const previousBookCount = library.books.length;
+
+      // Actualizar la biblioteca agregando el nuevo libro
+      const updatedLibrary = await this.libraryModel.findByIdAndUpdate(
+        library._id,
+        { $addToSet: { books: book._id } }, // Evita duplicados automáticamente
+        { new: true }, // Retorna la biblioteca actualizada
+      );
+
+      if (!updatedLibrary) {
+        throw new InternalServerErrorException(
+          'Error actualizando la biblioteca',
+        );
+      } else if (updatedLibrary.books.length === previousBookCount) {
+        throw new ConflictException(
+          'El libro ya está en la biblioteca del usuario',
+        );
+      }
+
+      return updatedLibrary;
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Error inesperado añadiendo el libro a la biblioteca: ${error}`,
+      );
+    }
   }
 
   findAll() {
