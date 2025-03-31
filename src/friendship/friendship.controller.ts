@@ -8,6 +8,7 @@ import {
   Request,
   UseGuards,
   UnauthorizedException,
+  Delete,
 } from '@nestjs/common';
 import { FriendshipService } from './friendship.service';
 import { CreateFriendshipDto } from './dto/create-friendship.dto';
@@ -113,11 +114,11 @@ export class FriendshipController {
   }
 
   @UseGuards(AuthGuard)
-  @Patch(':id/delete')
+  @Delete(':id/delete')
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Eliminar relación de amistad',
-    description: 'Elimina la relación de amistad del usuario autenticado',
+    summary: 'Eliminar relación de amistad por su ID',
+    description: 'Elimina la relación de amistad con el ID proporcionado',
   })
   async deleteFriendship(
     @Param('id') idFriendship: string,
