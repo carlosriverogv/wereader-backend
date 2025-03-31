@@ -44,6 +44,9 @@ export class Book extends Document {
 
   @Prop({ type: Date, default: Date.now })
   dateCreation: Date; // Fecha de alta del libro.
+
+  @Prop({ default: 0 }) // Número de veces que se ha descargado el libro.
+  downloads: number;
 }
 
 export const BookSchema = SchemaFactory.createForClass(Book);

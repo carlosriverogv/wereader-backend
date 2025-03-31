@@ -135,6 +135,13 @@ export class LibraryService {
         );
       }
 
+      // Incrementar downloads del libro en +1 (utilizado para la tienda)
+      await this.bookModel.findByIdAndUpdate(
+        bookId,
+        { $inc: { downloads: 1 } },
+        { new: true },
+      );
+
       return updatedLibrary;
     } catch (error) {
       if (

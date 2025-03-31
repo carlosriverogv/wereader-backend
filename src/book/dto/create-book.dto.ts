@@ -92,7 +92,4 @@ export class CreateBookDto {
       'Indica si el libro se puede incluir en la biblioteca compartida',
   })
   readonly shareable: boolean;
-
-  // @IsDateString({})
-  // readonly dateCreation: Date;
 }
