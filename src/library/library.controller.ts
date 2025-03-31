@@ -8,6 +8,7 @@ import {
   UnauthorizedException,
   Param,
   Patch,
+  Delete,
 } from '@nestjs/common';
 import { LibraryService } from './library.service';
 import { CreateLibraryDto } from './dto/create-library.dto';
@@ -85,8 +86,11 @@ export class LibraryController {
   //   return this.libraryService.update(+id, updateLibraryDto);
   // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.libraryService.remove(+id);
-  // }
+  @UseGuards(AuthGuard)
+  @Delete(':id')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Elimina la biblioteca por su ID' })
+  remove(@Param('id') id: string) {
+    return this.libraryService.remove(id);
+  }
 }

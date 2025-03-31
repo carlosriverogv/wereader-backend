@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateLibraryDto } from './dto/create-library.dto';
-import { UpdateLibraryDto } from './dto/update-library.dto';
 import { Library } from './entities/library.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -39,7 +38,7 @@ export class LibraryService {
 
       // Si ya existe una biblioteca para el usuario, lanzar un error
       if (existingLibrary) {
-        throw new InternalServerErrorException(
+        throw new ConflictException(
           'Ya existe una biblioteca para este usuario',
         );
       }
@@ -51,9 +50,13 @@ export class LibraryService {
       // Devolver la biblioteca creada
       return { ok: true, resultado: library };
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Error inesperado creando la biblioteca: ' + error,
-      );
+      if (error instanceof ConflictException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(
+          'Error inesperado creando la biblioteca: ' + error,
+        );
+      }
     }
   }
 
@@ -146,19 +149,29 @@ export class LibraryService {
     }
   }
 
-  findAll() {
-    return `This action returns all library`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} library`;
-  }
-
-  update(id: number, updateLibraryDto: UpdateLibraryDto) {
-    return `This action updates a #${id} library`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} library`;
+  /**
+   * Eliminar una biblioteca por ID
+   * @param id El ID de la biblioteca a eliminar
+   * @description Eliminar una biblioteca por ID
+   * @returns {Promise<{ ok: boolean; resultado: Library }>} La biblioteca eliminada
+   * @throws NotFoundException Si no se encuentra la biblioteca
+   * @throws InternalServerErrorException Si ocurre un error inesperado
+   */
+  async remove(id: string): Promise<{ ok: boolean; resultado: Library }> {
+    try {
+      const library = await this.libraryModel.findByIdAndDelete({ id });
+      if (!library) {
+        throw new NotFoundException('No se encontró la biblioteca');
+      }
+      return { ok: true, resultado: library };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(
+          'Error inesperado eliminando la biblioteca: ' + error,
+        );
+      }
+    }
   }
 }
