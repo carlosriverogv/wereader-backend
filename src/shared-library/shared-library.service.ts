@@ -115,4 +115,36 @@ export class SharedLibraryService {
       }
     }
   }
+
+  async getSharedWithMe(idUserAuth: string): Promise<SharedLibrary[]> {
+    try {
+      const sharedLibraries = await this.sharedLibraryModel
+        .find({ idUserFriend: idUserAuth }) // Filtra por el usuario que recibió la biblioteca
+        .populate({
+          path: 'idLibrary', // Carga la información completa de la biblioteca
+          populate: { path: 'books' }, // Carga los libros de la biblioteca
+        })
+        .populate({
+          path: 'idUserOwner', // Carga la información del propietario de la biblioteca
+          select: 'name tag', // Obtenemos los datos esenciables del propietario
+        })
+        .exec();
+
+      if (!sharedLibraries || sharedLibraries.length === 0) {
+        throw new NotFoundException(
+          'No se encontraron bibliotecas compartidas con el usuario autenticado',
+        );
+      }
+
+      return sharedLibraries;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(
+          'Error inesperado obteniendo las bibliotecas compartidas: ' + error,
+        );
+      }
+    }
+  }
 }

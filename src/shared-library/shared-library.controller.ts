@@ -5,6 +5,7 @@ import {
   UseGuards,
   Request,
   UnauthorizedException,
+  Get,
 } from '@nestjs/common';
 import { SharedLibraryService } from './shared-library.service';
 import { CreateSharedLibraryDto } from './dto/create-shared-library.dto';
@@ -33,5 +34,22 @@ export class SharedLibraryController {
       throw new UnauthorizedException('El token no contiene un ID de usuario');
     }
     return this.sharedLibraryService.share(idUserOwner, createSharedLibraryDto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('sharedWithMe')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Obtener las bibliotecas compartidas con el usuario autenticado',
+    description:
+      'Obtiene las bibliotecas compartidas con el usuario autenticado',
+  })
+  async getSharedWithMe(@Request() req: RequestWithUser) {
+    const idUserAuth = req.user.sub;
+    console.log('ID de usuario autenticado:', idUserAuth);
+    if (!idUserAuth) {
+      throw new UnauthorizedException('El token no contiene un ID de usuario');
+    }
+    return await this.sharedLibraryService.getSharedWithMe(idUserAuth);
   }
 }
