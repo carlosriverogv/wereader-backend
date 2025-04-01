@@ -264,6 +264,7 @@ export class FriendshipService {
 
   /**
    * Busca todas las amistades aceptadas de un usuario
+   * (Revisar posibilidad de devolver Promise<Friendship[]>)
    * @returns {Promise<User[]>} Lista de amistades
    * @throws InternalServerErrorException Si ocurre un error inesperado
    */
