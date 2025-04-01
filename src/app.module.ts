@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { LibraryModule } from './library/library.module';
 import { FriendshipModule } from './friendship/friendship.module';
+import { SharedLibraryModule } from './shared-library/shared-library.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { FriendshipModule } from './friendship/friendship.module';
     AuthModule,
     LibraryModule,
     FriendshipModule,
+    SharedLibraryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
