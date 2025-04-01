@@ -47,3 +47,16 @@ cd ./we-reader
 ts-node src/database/seed-users.ts
 
 Limpiar caché eslint: npx eslint --fix
+
+
+REVISIONES -----------------------------------------
+friendship.service.ts - 267
+   * (Revisar posibilidad de devolver Promise<Friendship[]>) en lugar de Promise<User[]>
+Esto facilida la eliminación de amigos
+INCORPORAR ESTE CAMBIO EN CASO DE AÑADIR LA FUNCIONALIDAD DE ELIMINAR AMIGOS EN ANDROID
+
+shared-library.service.ts - 160 -  URGENTE!!
+  * (PROVISIONAL) (Cambiar por eliminar sharedLibrary usando el ID de los dos usuarios) !!
+Para que el usuario autenticado pueda dejar de compartir su biblioteca con un amigo
+
+
