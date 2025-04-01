@@ -21,6 +21,7 @@ export class SharedLibraryService {
     @InjectModel('library')
     private readonly libraryModel: Model<Library>,
   ) {}
+
   /**
    * Crear una biblioteca compartida
    * @param createSharedLibraryDto Los datos de la biblioteca compartida a crear
@@ -28,7 +29,6 @@ export class SharedLibraryService {
    * @returns {Promise<{ ok: boolean; message: string; resultado: SharedLibrary }>} La biblioteca compartida creada
    * @throws InternalServerErrorException Si ocurre un error inesperado
    */
-
   async share(
     idUserOwner: string,
     createSharedLibraryDto: CreateSharedLibraryDto,
@@ -116,6 +116,13 @@ export class SharedLibraryService {
     }
   }
 
+  /**
+   * Obtener las bibliotecas compartidas con el usuario autenticado
+   * @param idUserAuth El ID del usuario autenticado
+   * @description Obtener las bibliotecas compartidas con el usuario autenticado
+   * @returns {Promise<SharedLibrary[]>} Las bibliotecas compartidas con el usuario autenticado
+   * @throws InternalServerErrorException Si ocurre un error inesperado
+   */
   async getSharedWithMe(idUserAuth: string): Promise<SharedLibrary[]> {
     try {
       const sharedLibraries = await this.sharedLibraryModel
@@ -145,6 +152,37 @@ export class SharedLibraryService {
           'Error inesperado obteniendo las bibliotecas compartidas: ' + error,
         );
       }
+    }
+  }
+
+  /**
+   * Eliminar una biblioteca compartida
+   * (PROVISIONAL) (Cambiar por eliminar sharedLibrary usando el ID de los dos usuarios) !!
+   * @param idSharedLibrary El ID de la biblioteca compartida a eliminar
+   * @description Eliminar una biblioteca compartida
+   * @returns {Promise<{ ok: boolean; message: string }>} Mensaje de éxito
+   * @throws InternalServerErrorException Si ocurre un error inesperado
+   */
+  async deleteSharedLibrary(
+    idSharedLibrary: string,
+  ): Promise<{ ok: boolean; message: string }> {
+    try {
+      const result = await this.sharedLibraryModel.deleteOne({
+        _id: idSharedLibrary,
+      });
+
+      if (result.deletedCount === 0) {
+        throw new NotFoundException('No se encontró la biblioteca compartida');
+      }
+
+      return {
+        ok: true,
+        message: 'Biblioteca compartida eliminada correctamente',
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'Error inesperado eliminando la biblioteca compartida: ' + error,
+      );
     }
   }
 }
