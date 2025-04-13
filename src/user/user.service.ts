@@ -52,13 +52,11 @@ export class UserService {
    * Servicio de creación de nuevos usuarios (REGISTRO)
    * @param createUserDto - Datos del usuario a insertar
    * @description Servicio de creación de nuevos usuarios
-   * @returns {Promise<{ ok: boolean; resultado: User }>} - Usuario insertado
+   * @returns {Promise<User>} - Usuario insertado
    * @throws ConflictException - Si el usuario ya existe
    * @throws InternalServerErrorException - Si ocurre un error inesperado
    */
-  async create(
-    createUserDto: CreateUserDto,
-  ): Promise<{ ok: boolean; resultado: User }> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       // Verificar si el usuario ya existe
       const existingUser = await this.userModel
@@ -85,7 +83,7 @@ export class UserService {
       // Guardamos el usuario en la base de datos
       await newUser.save();
 
-      return { ok: true, resultado: newUser };
+      return newUser;
     } catch (error: any) {
       // Si el error es un ConflictException, lo relanzamos directamente
       if (error instanceof ConflictException) {

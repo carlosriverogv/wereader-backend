@@ -44,6 +44,10 @@ export class AuthController {
   async register(@Body() createUserDto: CreateUserDto) {
     // Crear el usuario
     const user = await this.userService.create(createUserDto);
-    return { ok: true, user };
+    return {
+      success: true,
+      message: 'Registro de usuario exitoso',
+      user, // Token JWT generado
+    };
   }
 }
