@@ -56,7 +56,7 @@ export class UserService {
    * @throws ConflictException - Si el usuario ya existe
    * @throws InternalServerErrorException - Si ocurre un error inesperado
    */
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<Partial<User>> {
     try {
       // Verificar si el usuario ya existe
       const existingUser = await this.userModel
@@ -77,13 +77,25 @@ export class UserService {
 
       createUserDto.password = hashedPassword;
 
-      // Si el usuario no existe, lo creamos
+      // // Si el usuario no existe, lo creamos
+      // const newUser = new this.userModel(createUserDto);
+
+      // // Guardamos el usuario en la base de datos
+      // await newUser.save();
+
+      // return newUser;
+
       const newUser = new this.userModel(createUserDto);
+      const savedUser = await newUser.save();
 
-      // Guardamos el usuario en la base de datos
-      await newUser.save();
+      // Convertimos a objeto plano y quitamos la contraseña
+      const { password, ...userWithoutPassword } = savedUser.toObject();
 
-      return newUser;
+      // Evitamos el warning de variable no utilizada
+      void password;
+
+      // Devolvemos el usuario sin la contraseña
+      return userWithoutPassword;
     } catch (error: any) {
       // Si el error es un ConflictException, lo relanzamos directamente
       if (error instanceof ConflictException) {
