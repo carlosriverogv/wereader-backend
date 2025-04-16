@@ -14,7 +14,7 @@ export class CreateUserDto {
   @IsString({ message: 'El tag debe ser un texto' })
   @IsNotEmpty({ message: 'El tag es obligatorio' })
   @MinLength(3, { message: 'El tag debe tener al menos 3 caracteres' })
-  @MaxLength(25, { message: 'El tag no puede superar los 25 caracteres' })
+  @MaxLength(15, { message: 'El tag no puede superar los 15 caracteres' })
   // Debe empezar por @, solo letras(minúsculas) y números y no puede tener espacios ni caracteres especiales
   @Matches(/^@[a-z0-9]+$/, {
     message:
