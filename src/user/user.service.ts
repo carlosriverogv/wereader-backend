@@ -188,4 +188,27 @@ export class UserService {
       }
     }
   }
+
+  // Cambbiar avatar
+  async changeAvatar(userId: string, avatar: number): Promise<User> {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(
+        userId,
+        { avatar },
+        { new: true },
+      );
+      if (!user) {
+        throw new NotFoundException(`El usuario con ID '${userId}' no existe.`);
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException(
+          'Error inesperado actualizando el avatar: ' + error,
+        );
+      }
+    }
+  }
 }

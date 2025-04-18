@@ -68,4 +68,10 @@ export class UserController {
   async remove(@Param('id') id: string) {
     return await this.userService.remove(id);
   }
+
+  // Métodos adicionales para actualizar el perfil del usuario -------------------------------------------
+
+  // Actualizar el avatar del usuario autenticado
+  // Actualizar el autor favorito del usuario autenticado
+  // Actualizar el género favorito del usuario autenticado
 }
