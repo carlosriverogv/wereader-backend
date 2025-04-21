@@ -129,6 +129,7 @@ export class SharedLibraryService {
         .find({ idUserFriend: idUserAuth }) // Filtra por el usuario que recibió la biblioteca
         .populate({
           path: 'idLibrary', // Carga la información completa de la biblioteca
+          select: 'books', // Selecciona los campos que deseas mostrar
           populate: { path: 'books' }, // Carga los libros de la biblioteca
         })
         .populate({

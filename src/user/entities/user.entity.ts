@@ -52,7 +52,7 @@ export class User extends Document {
     minlength: 2,
     maxlength: 100,
   })
-  genderFav?: string;
+  genreFav?: string;
 
   @Prop({
     required: false,
