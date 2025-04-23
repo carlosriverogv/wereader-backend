@@ -31,7 +31,7 @@ export class Book extends Document {
   coverUrl?: string;
 
   @Prop({ required: true }) // Genero del libro (opcional)
-  gender: string;
+  genre: string;
 
   @Prop({ required: false, type: Date }) // Fecha de publicación del libro (opcional)
   datePublished?: Date;
