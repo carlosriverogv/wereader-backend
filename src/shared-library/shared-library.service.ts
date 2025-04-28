@@ -61,6 +61,17 @@ export class SharedLibraryService {
         throw new NotFoundException('No existe una amistad entre los usuarios');
       }
 
+      // Verificar si el usuario ya ha recibido una biblioteca compartida de cualquier otro usuario
+      const alreadyReceivedLibrary = await this.sharedLibraryModel.findOne({
+        idUserFriend: idUserFriend,
+      });
+
+      if (alreadyReceivedLibrary) {
+        throw new ConflictException(
+          'El usuario ya ha recibido una biblioteca compartida de otro usuario',
+        );
+      }
+
       // Verificar si ya existe una biblioteca compartida entre los usuarios
       const existingSharedLibrary = await this.sharedLibraryModel.findOne({
         $or: [
@@ -123,10 +134,10 @@ export class SharedLibraryService {
    * @returns {Promise<SharedLibrary[]>} Las bibliotecas compartidas con el usuario autenticado
    * @throws InternalServerErrorException Si ocurre un error inesperado
    */
-  async getSharedWithMe(idUserAuth: string): Promise<SharedLibrary[]> {
+  async getSharedWithMe(idUserAuth: string): Promise<SharedLibrary> {
     try {
       const sharedLibraries = await this.sharedLibraryModel
-        .find({ idUserFriend: idUserAuth }) // Filtra por el usuario que recibió la biblioteca
+        .findOne({ idUserFriend: idUserAuth }) // Filtra por el usuario que recibió la biblioteca
         .populate({
           path: 'idLibrary', // Carga la información completa de la biblioteca
           select: 'books', // Selecciona los campos que deseas mostrar
@@ -138,7 +149,7 @@ export class SharedLibraryService {
         })
         .exec();
 
-      if (!sharedLibraries || sharedLibraries.length === 0) {
+      if (!sharedLibraries) {
         throw new NotFoundException(
           'No se encontraron bibliotecas compartidas con el usuario autenticado',
         );

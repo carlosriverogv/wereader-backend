@@ -40,7 +40,7 @@ export class AuthController {
    * @returns El usuario
    */
   @Post('register')
-  @ApiOperation({ summary: 'Registrar un usuario' })
+  @ApiOperation({ summary: 'Registrar un usuario (con biblioteca)' })
   async register(@Body() createUserDto: CreateUserDto) {
     // Crear el usuario
     const user = await this.userService.create(createUserDto);

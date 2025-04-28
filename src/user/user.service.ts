@@ -9,12 +9,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { Library } from 'src/library/entities/library.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel('user')
     private readonly userModel: Model<User>,
+    @InjectModel('library')
+    private readonly libraryModel: Model<Library>,
   ) {}
 
   /**
@@ -77,16 +80,16 @@ export class UserService {
 
       createUserDto.password = hashedPassword;
 
-      // // Si el usuario no existe, lo creamos
-      // const newUser = new this.userModel(createUserDto);
-
-      // // Guardamos el usuario en la base de datos
-      // await newUser.save();
-
-      // return newUser;
-
       const newUser = new this.userModel(createUserDto);
       const savedUser = await newUser.save();
+
+      // Se crea una biblioteca por defecto para el usuario
+      // 1
+      const library = new this.libraryModel({
+        idUser: savedUser._id,
+        books: [],
+      });
+      await library.save();
 
       // Convertimos a objeto plano y quitamos la contraseña
       const { password, ...userWithoutPassword } = savedUser.toObject();

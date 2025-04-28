@@ -74,7 +74,7 @@ export class CreateUserDto {
       'La contraseña debe contener al menos una minúscula, una mayúscula, un número y un símbolo',
   })
   @ApiProperty({
-    example: 'Jye3$%d2cmL&',
+    example: 'MyPassword23&',
     description: 'Contraseña del usuario',
   })
   password: string;
