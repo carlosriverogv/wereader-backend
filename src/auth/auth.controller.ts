@@ -22,14 +22,14 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
   async login(@Body() loginDto: LoginDto) {
-    const token = await this.authService.validateUser(
+    const result = await this.authService.validateUser(
       loginDto.email,
       loginDto.password,
     );
     return {
       success: true,
       message: 'Inicio de sesión exitoso',
-      token, // Token JWT generado
+      token: result.token, // Token JWT generado
     };
   }
 
@@ -47,7 +47,7 @@ export class AuthController {
     return {
       success: true,
       message: 'Registro de usuario exitoso',
-      user, // Token JWT generado
+      user,
     };
   }
 }

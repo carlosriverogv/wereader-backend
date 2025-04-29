@@ -32,6 +32,8 @@ export class AuthService {
     const payload: JwtPayload = { email: user.email, sub: String(user._id) };
     // Generamos un token con el login (email) del usuario
     const token: string = await this.jwtService.signAsync(payload);
-    return { token };
+    return {
+      token,
+    };
   }
 }
