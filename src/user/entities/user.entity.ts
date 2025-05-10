@@ -27,7 +27,7 @@ export class User extends Document {
 
   @Prop({
     required: true,
-    enum: [1, 2, 3, 4],
+    enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
   })
   avatar: number;
 
@@ -52,7 +52,7 @@ export class User extends Document {
     minlength: 2,
     maxlength: 100,
   })
-  genderFav?: string;
+  genreFav?: string;
 
   @Prop({
     required: false,

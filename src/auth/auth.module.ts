@@ -11,7 +11,7 @@ import { JwtModule } from '@nestjs/jwt';
       // Para no tener que importar el módulo en cada componente
       global: true,
       secret: 'coppermind',
-      signOptions: { expiresIn: '2h' },
+      signOptions: { expiresIn: '1000h' },
     }),
   ],
   controllers: [AuthController],

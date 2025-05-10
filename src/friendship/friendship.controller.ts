@@ -51,7 +51,6 @@ export class FriendshipController {
   })
   async getMyFriendships(@Request() req: RequestWithUser) {
     const idUserAuth = req.user.sub;
-    console.log('ID de usuario autenticado:', idUserAuth);
     if (!idUserAuth) {
       throw new UnauthorizedException('El token no contiene un ID de usuario');
     }

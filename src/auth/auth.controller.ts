@@ -22,14 +22,14 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
   async login(@Body() loginDto: LoginDto) {
-    const token = await this.authService.validateUser(
+    const result = await this.authService.validateUser(
       loginDto.email,
       loginDto.password,
     );
     return {
       success: true,
       message: 'Inicio de sesión exitoso',
-      token, // Token JWT generado
+      token: result.token, // Token JWT generado
     };
   }
 
@@ -40,10 +40,14 @@ export class AuthController {
    * @returns El usuario
    */
   @Post('register')
-  @ApiOperation({ summary: 'Registrar un usuario' })
+  @ApiOperation({ summary: 'Registrar un usuario (con biblioteca)' })
   async register(@Body() createUserDto: CreateUserDto) {
     // Crear el usuario
     const user = await this.userService.create(createUserDto);
-    return { ok: true, user };
+    return {
+      success: true,
+      message: 'Registro de usuario exitoso',
+      user,
+    };
   }
 }

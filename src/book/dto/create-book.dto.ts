@@ -66,7 +66,7 @@ export class CreateBookDto {
     example: 'Fantasía',
     description: 'Género del libro',
   })
-  readonly gender: string;
+  readonly genre: string;
 
   @IsDateString({})
   @IsOptional()

@@ -9,12 +9,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { Library } from 'src/library/entities/library.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel('user')
     private readonly userModel: Model<User>,
+    @InjectModel('library')
+    private readonly libraryModel: Model<Library>,
   ) {}
 
   /**
@@ -52,13 +55,11 @@ export class UserService {
    * Servicio de creación de nuevos usuarios (REGISTRO)
    * @param createUserDto - Datos del usuario a insertar
    * @description Servicio de creación de nuevos usuarios
-   * @returns {Promise<{ ok: boolean; resultado: User }>} - Usuario insertado
+   * @returns {Promise<User>} - Usuario insertado
    * @throws ConflictException - Si el usuario ya existe
    * @throws InternalServerErrorException - Si ocurre un error inesperado
    */
-  async create(
-    createUserDto: CreateUserDto,
-  ): Promise<{ ok: boolean; resultado: User }> {
+  async create(createUserDto: CreateUserDto): Promise<Partial<User>> {
     try {
       // Verificar si el usuario ya existe
       const existingUser = await this.userModel
@@ -79,13 +80,25 @@ export class UserService {
 
       createUserDto.password = hashedPassword;
 
-      // Si el usuario no existe, lo creamos
       const newUser = new this.userModel(createUserDto);
+      const savedUser = await newUser.save();
 
-      // Guardamos el usuario en la base de datos
-      await newUser.save();
+      // Se crea una biblioteca por defecto para el usuario
+      // 1
+      const library = new this.libraryModel({
+        idUser: savedUser._id,
+        books: [],
+      });
+      await library.save();
 
-      return { ok: true, resultado: newUser };
+      // Convertimos a objeto plano y quitamos la contraseña
+      const { password, ...userWithoutPassword } = savedUser.toObject();
+
+      // Evitamos el warning de variable no utilizada
+      void password;
+
+      // Devolvemos el usuario sin la contraseña
+      return userWithoutPassword;
     } catch (error: any) {
       // Si el error es un ConflictException, lo relanzamos directamente
       if (error instanceof ConflictException) {
@@ -174,6 +187,29 @@ export class UserService {
       } else {
         throw new InternalServerErrorException(
           'Error inesperado eliminando el usuario: ' + error,
+        );
+      }
+    }
+  }
+
+  // Cambbiar avatar
+  async changeAvatar(userId: string, avatar: number): Promise<User> {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(
+        userId,
+        { avatar },
+        { new: true },
+      );
+      if (!user) {
+        throw new NotFoundException(`El usuario con ID '${userId}' no existe.`);
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException(
+          'Error inesperado actualizando el avatar: ' + error,
         );
       }
     }

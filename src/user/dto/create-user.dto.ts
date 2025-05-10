@@ -14,11 +14,10 @@ export class CreateUserDto {
   @IsString({ message: 'El tag debe ser un texto' })
   @IsNotEmpty({ message: 'El tag es obligatorio' })
   @MinLength(3, { message: 'El tag debe tener al menos 3 caracteres' })
-  @MaxLength(25, { message: 'El tag no puede superar los 25 caracteres' })
+  @MaxLength(15, { message: 'El tag no puede superar los 15 caracteres' })
   // Debe empezar por @, solo letras(minúsculas) y números y no puede tener espacios ni caracteres especiales
-  @Matches(/^@[a-z0-9]+$/, {
-    message:
-      'Solo letras(minúsculas) y números, y no puede tener espacios ni caracteres especiales',
+  @Matches(/^@[a-zA-Z0-9_]+$/, {
+    message: 'Solo letras, números y guion bajo, debe comenzar con @',
   })
   @ApiProperty({
     example: '@usuario',
@@ -75,7 +74,7 @@ export class CreateUserDto {
       'La contraseña debe contener al menos una minúscula, una mayúscula, un número y un símbolo',
   })
   @ApiProperty({
-    example: 'Jye3$%d2cmL&',
+    example: 'MyPassword23&',
     description: 'Contraseña del usuario',
   })
   password: string;
@@ -86,7 +85,7 @@ export class CreateUserDto {
     example: 'Fantasía',
     description: 'Género favorito del usuario',
   })
-  genderFav?: string;
+  genreFav?: string;
 
   @IsString({ message: 'El autor favorito debe ser un texto' })
   @IsOptional()
