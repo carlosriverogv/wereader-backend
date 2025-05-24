@@ -31,12 +31,6 @@ swagger
 Comando: npm install --save @nestjs/swagger swagger-ui-express
 Descripción: Pruebas y documentación
 
-Añadir a .prettierrc
-{
-  "endOfLine": "lf"
-}
-npx prettier --write .
-
 LANZAR EL PROYECTO -------------------------------
 cd ./we-reader (Ejecutar desde la raiz del proyecto)
 npm run start:dev
@@ -53,6 +47,13 @@ ts-node src/database/seed-books.ts
 Solución de errores de ESLINT -----------------------
 
 Limpiar caché eslint: npx eslint --fix
+
+Restablecer Prettier
+Añadir a .prettierrc
+{
+"endOfLine": "lf"
+}
+npx prettier --write . 
 
 REVISIONES -----------------------------------------
 friendship.service.ts - 267

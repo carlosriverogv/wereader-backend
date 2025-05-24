@@ -47,7 +47,9 @@ export class CreateUserDto {
   })
   lastname: string;
 
-  @IsEnum([1, 2, 3, 4], { message: 'El avatar debe ser un número entre 1 y 4' })
+  @IsEnum([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], {
+    message: 'El avatar debe ser un número entre 1 y 12',
+  })
   @IsNotEmpty({ message: 'El avatar es obligatorio' })
   @ApiProperty({
     example: 1,
