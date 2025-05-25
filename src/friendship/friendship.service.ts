@@ -311,7 +311,7 @@ export class FriendshipService {
         friends.push(userFriendship);
       }
 
-      return friends;
+      return friends || [];
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
