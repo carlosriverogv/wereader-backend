@@ -46,6 +46,7 @@ export class FriendshipService {
         );
       }
 
+      // TODO: Separar la comprobación entre aceptada y pendiente-------------
       // Comprobar que no existe una solicitud de amistad pendiente
       const existingFriendship = await this.friendshipModel.findOne({
         $or: [
@@ -59,6 +60,27 @@ export class FriendshipService {
         throw new ConflictException(
           'Ya hay una relación de amistad entre estos usuarios. Ya sea pendiente, aceptada.',
         );
+      }
+
+      // Buscar si existe una amistad rechazada entre los usuarios
+      const rejectedFriendship = await this.friendshipModel.findOne({
+        $or: [
+          { idUser1, idUser2, status: 'rejected' },
+          { idUser1: idUser2, idUser2: idUser1, status: 'rejected' },
+        ],
+      });
+
+      // Si existe una amistad rechazada, la actualizamos a pendiente
+      // Aquí se podrían implementar reglas adicionales, como un límite de tiempo para re-enviar solicitudes
+      if (rejectedFriendship) {
+        rejectedFriendship.status = 'pending';
+        await rejectedFriendship.save();
+
+        return {
+          ok: true,
+          message: 'Solicitud de amistad reenviada correctamente',
+          newFriendship: rejectedFriendship,
+        };
       }
 
       // Crear la nueva solicitud de amistad
@@ -91,42 +113,28 @@ export class FriendshipService {
 
   /**
    * Acepta una solicitud de amistad
-   * @param idFriendship ID de la amistad a aceptar
-   * @returns {Promise<{ ok: boolean; message: string; friendship: Friendship }>} La amistad aceptada
-   * @throws NotFoundException Si no se encuentra la amistad
-   * @throws ConflictException Si la amistad ya ha sido aceptada o rechazada
+   * @param idUserAuth ID del usuario autenticado que acepta la solicitud
+   * @param idUserFriend ID del usuario amigo que envió la solicitud
+   * @returns {Promise<{ ok: boolean; message: string }>} Mensaje de éxito
+   * @throws NotFoundException Si no se encuentra la solicitud de amistad pendiente
+   * @throws InternalServerErrorException Si ocurre un error inesperado
    */
   async acceptFriendship(
-    idFriendship: string,
     idUserAuth: string,
-  ): Promise<{ ok: boolean; message: string; friendship: Friendship }> {
+    idUserFriend: string,
+  ): Promise<{ ok: boolean; message: string }> {
     try {
-      // Buscar la amistad por ID
-      const friendship = await this.friendshipModel.findById(idFriendship);
+      // Buscar la amistad pendiente entre el usuario que envió la solicitud y el autenticado
+      const friendship = await this.friendshipModel.findOne({
+        idUser1: idUserFriend,
+        idUser2: idUserAuth,
+        status: 'pending',
+      });
 
       if (!friendship) {
-        throw new NotFoundException('No se encontró la amistad');
-      }
-
-      // Buscar el usuario autenticado y el usuario que recibe la solicitud
-      const userAuth = await this.userModel.findById(idUserAuth);
-      const userFriendship = await this.userModel.findById(friendship.idUser2);
-
-      if (!userAuth || !userFriendship) {
-        throw new NotFoundException('No se encontró el usuario autenticado');
-      }
-
-      // Comprobar que el usuario autenticado es el que recibe la solicitud
-      if (userAuth.id !== userFriendship.id) {
-        throw new ConflictException(
-          'El usuario autenticado no es el que recibe la solicitud de amistad',
-        );
-      }
-
-      // Verificar si la solicitud ya ha sido aceptada o rechazada
-      if (friendship.status !== 'pending') {
-        throw new ConflictException(
-          `No se puede aceptar esta solicitud porque ya está '${friendship.status}'`,
+        throw new NotFoundException(
+          'No se encontró una solicitud de amistad pendiente para aceptar' +
+            idUserFriend,
         );
       }
 
@@ -137,7 +145,6 @@ export class FriendshipService {
       return {
         ok: true,
         message: 'Solicitud de amistad aceptada correctamente',
-        friendship,
       };
     } catch (error) {
       if (
@@ -147,49 +154,34 @@ export class FriendshipService {
         throw error;
       }
       throw new InternalServerErrorException(
-        'Error inesperado aceptando la amistad: ' + error,
+        'Error inesperado aceptando la solicitud de amistad: ' + error,
       );
     }
   }
 
   /**
    * Rechaza una solicitud de amistad
-   * @param idFriendship ID de la amistad a rechazar
-   * @returns {Promise<{ ok: boolean; message: string; friendship: Friendship }>} La amistad rechazada
-   * @throws NotFoundException Si no se encuentra la amistad
-   * @throws ConflictException Si la amistad ya ha sido aceptada o rechazada
+   * @param idUserAuth ID del usuario autenticado que rechaza la solicitud
+   * @param idUserFriend ID del usuario amigo que envió la solicitud
+   * @returns {Promise<{ ok: boolean; message: string; friendship: Friendship }>} Mensaje de éxito y la amistad actualizada
+   * @throws NotFoundException Si no se encuentra la solicitud de amistad pendiente
+   * @throws InternalServerErrorException Si ocurre un error inesperado
    */
   async rejectFriendship(
-    idFriendship: string,
     idUserAuth: string,
+    idUserFriend: string,
   ): Promise<{ ok: boolean; message: string; friendship: Friendship }> {
     try {
-      // Buscar la amistad por ID
-      const friendship = await this.friendshipModel.findById(idFriendship);
+      // Buscar la amistad pendiente entre el usuario que envió la solicitud y el autenticado
+      const friendship = await this.friendshipModel.findOne({
+        idUser1: idUserFriend,
+        idUser2: idUserAuth,
+        status: 'pending',
+      });
 
       if (!friendship) {
-        throw new NotFoundException('No se encontró la amistad');
-      }
-
-      // Buscar el usuario autenticado y el usuario que recibe la solicitud
-      const userAuth = await this.userModel.findById(idUserAuth);
-      const userFriendship = await this.userModel.findById(friendship.idUser2);
-
-      if (!userAuth || !userFriendship) {
-        throw new NotFoundException('No se encontró el usuario autenticado');
-      }
-
-      // Comprobar que el usuario autenticado es el que recibe la solicitud
-      if (userAuth.id !== userFriendship.id) {
-        throw new ConflictException(
-          'El usuario autenticado no es el que recibe la solicitud de amistad',
-        );
-      }
-
-      // Verificar si la solicitud ya ha sido aceptada o rechazada
-      if (friendship.status !== 'pending') {
-        throw new ConflictException(
-          `No se puede rechazar esta solicitud porque ya está '${friendship.status}'`,
+        throw new NotFoundException(
+          'No se encontró una solicitud de amistad pendiente para rechazar',
         );
       }
 
@@ -210,7 +202,7 @@ export class FriendshipService {
         throw error;
       }
       throw new InternalServerErrorException(
-        'Error inesperado rechazando la amistad: ' + error,
+        'Error inesperado rechazando la solicitud de amistad: ' + error,
       );
     }
   }

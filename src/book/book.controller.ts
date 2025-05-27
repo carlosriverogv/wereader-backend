@@ -63,10 +63,10 @@ export class BookController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('search/gender/:gender')
+  @Get('search/genre/:genre')
   @ApiOperation({ summary: 'Buscar libros por género' })
-  findByGender(@Param('gender') gender: string) {
-    return this.bookService.findByGender(gender);
+  findByGenre(@Param('genre') genre: string) {
+    return this.bookService.findByGenre(genre);
   }
 
   @UseGuards(AuthGuard)

@@ -165,17 +165,17 @@ export class BookService {
 
   /**
    * @description Servicio de búsqueda de libros por género
-   * @param gender - Género del libro a buscar
+   * @param genre - Género del libro a buscar
    * @returns {Promise<Book[]>} - Lista de libros encontrados
    * @throws InternalServerErrorException - Si ocurre un error inesperado
    */
-  async findByGender(gender: string): Promise<Book[]> {
+  async findByGenre(genre: string): Promise<Book[]> {
     try {
-      const resultado = await this.bookModel.find({ gender });
+      const resultado = await this.bookModel.find({ genre });
       return resultado || [];
     } catch (error) {
       throw new InternalServerErrorException(
-        `Error inesperado buscando libros con Género '${gender}': ` + error,
+        `Error inesperado buscando libros con Género '${genre}': ` + error,
       );
     }
   }

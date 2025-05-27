@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsMongoId } from 'class-validator';
 
-export class DeleteFriendshipDto {
+export class BaseFriendshipDto {
   @IsMongoId()
   @ApiProperty({
     example: '67e54493fae48085b37a28d1',

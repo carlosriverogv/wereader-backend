@@ -4,7 +4,6 @@ import {
   Post,
   Body,
   Patch,
-  Param,
   Request,
   UseGuards,
   UnauthorizedException,
@@ -14,7 +13,7 @@ import { CreateFriendshipDto } from './dto/create-friendship.dto';
 import { RequestWithUser } from 'src/auth/interfaces/request-with-user.interface';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { DeleteFriendshipDto } from './dto/delete-friendship.dto';
+import { BaseFriendshipDto } from './dto/base-friendship.dto';
 
 @ApiTags('Relaciones de amistad')
 @Controller('friendship')
@@ -73,42 +72,42 @@ export class FriendshipController {
   }
 
   @UseGuards(AuthGuard)
-  @Patch(':id/accept')
+  @Patch('accept')
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Aceptar solicitud de amistad',
   })
   async acceptFriendship(
-    @Param('id') idFriendship: string,
     @Request() req: RequestWithUser,
+    @Body() dto: BaseFriendshipDto,
   ) {
     const idUserAuth = req.user.sub;
     if (!idUserAuth) {
       throw new UnauthorizedException('El token no contiene un ID de usuario');
     }
     return await this.friendshipService.acceptFriendship(
-      idFriendship,
       idUserAuth,
+      dto.idFriendUser,
     );
   }
 
   @UseGuards(AuthGuard)
-  @Patch(':id/reject')
+  @Patch('reject')
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Rechazar solicitud de amistad',
   })
   async rejectFriendship(
-    @Param('id') idFriendship: string,
     @Request() req: RequestWithUser,
+    @Body() dto: BaseFriendshipDto,
   ) {
     const idUserAuth = req.user.sub;
     if (!idUserAuth) {
       throw new UnauthorizedException('El token no contiene un ID de usuario');
     }
     return await this.friendshipService.rejectFriendship(
-      idFriendship,
       idUserAuth,
+      dto.idFriendUser,
     );
   }
 
@@ -122,7 +121,7 @@ export class FriendshipController {
   })
   async deleteMyFriendship(
     @Request() req: RequestWithUser,
-    @Body() dto: DeleteFriendshipDto,
+    @Body() dto: BaseFriendshipDto,
   ) {
     const idUserAuth = req.user.sub;
     if (!idUserAuth) {
