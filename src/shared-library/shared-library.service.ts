@@ -186,37 +186,15 @@ export class SharedLibraryService {
   }
 
   /**
-   * Eliminar una biblioteca compartida
-   * (PROVISIONAL) (Cambiar por eliminar sharedLibrary usando el ID de los dos usuarios) !!
-   * @param idSharedLibrary El ID de la biblioteca compartida a eliminar
-   * @description Eliminar una biblioteca compartida
+   * Eliminar una biblioteca compartida que el usuario autenticado ha enviado
+   * @param idUserAuth El ID del usuario autenticado
+   * @param idUserFriend El ID del usuario amigo al que se le envió la biblioteca compartida
+   * @description Elimina una biblioteca compartida que el usuario autenticado ha enviado
    * @returns {Promise<{ ok: boolean; message: string }>} Mensaje de éxito
+   * @throws NotFoundException Si no se encuentra la biblioteca compartida
    * @throws InternalServerErrorException Si ocurre un error inesperado
    */
-  async deleteSharedLibrary(
-    idSharedLibrary: string,
-  ): Promise<{ ok: boolean; message: string }> {
-    try {
-      const result = await this.sharedLibraryModel.deleteOne({
-        _id: idSharedLibrary,
-      });
-
-      if (result.deletedCount === 0) {
-        throw new NotFoundException('No se encontró la biblioteca compartida');
-      }
-
-      return {
-        ok: true,
-        message: 'Biblioteca compartida eliminada correctamente',
-      };
-    } catch (error) {
-      throw new InternalServerErrorException(
-        'Error inesperado eliminando la biblioteca compartida: ' + error,
-      );
-    }
-  }
-
-  async deleteSharedByMe(idUserAuth: string, idUserFriend: string) {
+  async deleteSharedLibraryByMe(idUserAuth: string, idUserFriend: string) {
     try {
       const result = await this.sharedLibraryModel.deleteOne({
         idUserOwner: idUserAuth,

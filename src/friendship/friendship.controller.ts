@@ -8,13 +8,13 @@ import {
   Request,
   UseGuards,
   UnauthorizedException,
-  Delete,
 } from '@nestjs/common';
 import { FriendshipService } from './friendship.service';
 import { CreateFriendshipDto } from './dto/create-friendship.dto';
 import { RequestWithUser } from 'src/auth/interfaces/request-with-user.interface';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { DeleteFriendshipDto } from './dto/delete-friendship.dto';
 
 @ApiTags('Relaciones de amistad')
 @Controller('friendship')
@@ -44,7 +44,7 @@ export class FriendshipController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('myfriendships')
+  @Get('myFriends')
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Obtener los amigos del usuario autenticado',
@@ -58,7 +58,7 @@ export class FriendshipController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('myfriendships/received')
+  @Get('receivedRequestFriendships')
   @ApiBearerAuth()
   @ApiOperation({
     summary:
@@ -113,23 +113,24 @@ export class FriendshipController {
   }
 
   @UseGuards(AuthGuard)
-  @Delete(':id/delete')
+  @Post('deleteMyFriendship')
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Eliminar relación de amistad por su ID',
-    description: 'Elimina la relación de amistad con el ID proporcionado',
+    summary: 'Eliminar relación de amistad con un usuario específico',
+    description:
+      'Elimina la relación de amistad con el usuario especificado en el cuerpo de la solicitud',
   })
-  async deleteFriendship(
-    @Param('id') idFriendship: string,
+  async deleteMyFriendship(
     @Request() req: RequestWithUser,
+    @Body() dto: DeleteFriendshipDto,
   ) {
     const idUserAuth = req.user.sub;
     if (!idUserAuth) {
       throw new UnauthorizedException('El token no contiene un ID de usuario');
     }
-    return await this.friendshipService.deleteFriendship(
-      idFriendship,
+    return await this.friendshipService.deleteFriendshipByIdFriend(
       idUserAuth,
+      dto.idFriendUser,
     );
   }
 }
