@@ -35,6 +35,20 @@ export class BookController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('newReleases')
+  @ApiOperation({ summary: 'Lista los 20 libros publicados más recientemente' })
+  async getLatestPublishedBooks() {
+    return this.bookService.findLatestPublished();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('bestsellers')
+  @ApiOperation({ summary: 'Lista los 20 libros más vendidos' })
+  async getTopDownloadedBooks() {
+    return this.bookService.findTopDownloaded();
+  }
+
+  @UseGuards(AuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Buscar un libro por ID' })
   findById(@Param('id') id: string) {

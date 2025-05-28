@@ -79,6 +79,47 @@ export class BookService {
   }
 
   /**
+   * @description Servicio para obtener los 20 libros más recientemente publicados
+   * @returns {Promise<Book[]>} - Lista de libros ordenados por fecha de publicación
+   * @throws InternalServerErrorException - Si ocurre un error inesperado
+   */
+  async findLatestPublished(): Promise<Book[]> {
+    try {
+      const resultado = await this.bookModel
+        .find({ datePublished: { $ne: null } }) // Nos aseguramos de que tenga fecha de publicación
+        .sort({ datePublished: -1 }) // Orden descendente
+        .limit(20); // Limitamos a 20 resultados
+
+      return resultado || [];
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error inesperado al buscar libros más recientemente publicados: ` +
+          error,
+      );
+    }
+  }
+
+  /**
+   * @description Servicio para obtener los 20 libros más descargados (más vendidos)
+   * @returns {Promise<Book[]>} - Lista de libros ordenados por número de descargas
+   * @throws InternalServerErrorException - Si ocurre un error inesperado
+   */
+  async findTopDownloaded(): Promise<Book[]> {
+    try {
+      const resultado = await this.bookModel
+        .find()
+        .sort({ downloads: -1 }) // Orden descendente por descargas
+        .limit(20); // Máximo 20 libros
+
+      return resultado || [];
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error inesperado al buscar los libros más descargados: ` + error,
+      );
+    }
+  }
+
+  /**
    * @description Servicio de búsqueda de libros por ID
    * @param id - ID del libro a buscar
    * @returns {Promise<Book>} - Libro encontrado
