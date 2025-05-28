@@ -113,14 +113,17 @@ export class UserService {
   }
 
   /**
-   * Busca usuarios por coincidencias en su tag
+   * Busca usuarios por coincidencias en su tag (máx. 10 resultados)
    * @param tagFragment Fragmento del tag a buscar
-   * @returns Lista de usuarios con tags que coincidan parcial o totalmente
+   * @returns Lista de hasta 10 usuarios con tags que coincidan parcial o totalmente
    */
   async searchByTag(tagFragment: string): Promise<User[]> {
     try {
       const regex = new RegExp(tagFragment, 'i'); // búsqueda insensible a mayúsculas
-      const users = await this.userModel.find({ tag: regex }).exec();
+      const users = await this.userModel
+        .find({ tag: regex })
+        .limit(10) // máximo 10 usuarios
+        .exec();
       return users;
     } catch (error) {
       throw new InternalServerErrorException(
