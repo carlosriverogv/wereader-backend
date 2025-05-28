@@ -10,6 +10,7 @@ import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { Library } from 'src/library/entities/library.entity';
+import { Friendship } from 'src/friendship/entities/friendship.entity';
 
 @Injectable()
 export class UserService {
@@ -18,6 +19,8 @@ export class UserService {
     private readonly userModel: Model<User>,
     @InjectModel('library')
     private readonly libraryModel: Model<Library>,
+    @InjectModel('friendship')
+    private readonly friendshipModel: Model<Friendship>,
   ) {}
 
   /**
@@ -117,13 +120,42 @@ export class UserService {
    * @param tagFragment Fragmento del tag a buscar
    * @returns Lista de hasta 10 usuarios con tags que coincidan parcial o totalmente
    */
-  async searchByTag(tagFragment: string): Promise<User[]> {
+  async searchByTag(idUserAuth: string, tagFragment: string): Promise<User[]> {
     try {
-      const regex = new RegExp(tagFragment, 'i'); // búsqueda insensible a mayúsculas
-      const users = await this.userModel
-        .find({ tag: regex })
-        .limit(10) // máximo 10 usuarios
+      const regex = new RegExp(tagFragment, 'i');
+
+      // Obtener todas las amistades donde participa el usuario
+      const friendships = await this.friendshipModel
+        .find({
+          $or: [{ idUser1: idUserAuth }, { idUser2: idUserAuth }],
+          status: 'accepted', // Solo amistades aceptadas
+        })
         .exec();
+
+      // Extraer IDs de amigos (excluyendo el del usuario autenticado)
+      const excludedIds = new Set<string>();
+      excludedIds.add(idUserAuth); // excluir a sí mismo
+
+      // Recorrer las amistades y agregar los IDs de los amigos a la lista de exclusión
+      for (const friendship of friendships) {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        const user1Id = friendship.idUser1.toString();
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        const user2Id = friendship.idUser2.toString();
+
+        if (user1Id !== idUserAuth) excludedIds.add(user1Id);
+        if (user2Id !== idUserAuth) excludedIds.add(user2Id);
+      }
+
+      // Buscar usuarios que coincidan con el tag y no estén en la lista de exclusión
+      const users = await this.userModel
+        .find({
+          tag: regex,
+          _id: { $nin: Array.from(excludedIds) },
+        })
+        .limit(10)
+        .exec();
+
       return users;
     } catch (error) {
       throw new InternalServerErrorException(

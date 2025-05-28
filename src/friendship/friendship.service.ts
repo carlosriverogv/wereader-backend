@@ -27,14 +27,14 @@ export class FriendshipService {
    * Crea una nueva solicitud de amistad
    * @param idUser1 ID del usuario que envía la solicitud
    * @param createFriendshipDto Datos de la solicitud de amistad (idUser2 es el ID del usuario que recibe la solicitud)
-   * @returns {Promise<{ ok: boolean; message: string; newFriendship: Friendship }>} La nueva amistad creada
+   * @returns {Promise<{ ok: boolean; message: string }>} La nueva amistad creada
    * @throws ConflictException Si ya existe una relación de amistad entre los usuarios
    * @throws BadRequestException Si se intenta enviar una solicitud a uno mismo
    */
   async createFriendship(
     idUser1: string,
     createFriendshipDto: CreateFriendshipDto,
-  ): Promise<{ ok: boolean; message: string; newFriendship: Friendship }> {
+  ): Promise<{ ok: boolean; message: string }> {
     try {
       // Obtener el ID del usuario que recibe la solicitud de amistad
       const idUser2 = createFriendshipDto.idFriendUser;
@@ -46,19 +46,29 @@ export class FriendshipService {
         );
       }
 
-      // TODO: Separar la comprobación entre aceptada y pendiente-------------
-      // Comprobar que no existe una solicitud de amistad pendiente
-      const existingFriendship = await this.friendshipModel.findOne({
+      // Comprobar si ya existe una amistad ACEPTADA entre los usuarios
+      const acceptedFriendship = await this.friendshipModel.findOne({
         $or: [
-          { idUser1, idUser2, status: 'pending' },
-          { idUser1: idUser2, idUser2: idUser1, status: 'pending' },
           { idUser1, idUser2, status: 'accepted' },
           { idUser1: idUser2, idUser2: idUser1, status: 'accepted' },
         ],
       });
-      if (existingFriendship) {
+
+      if (acceptedFriendship) {
+        throw new ConflictException('Este usuario ya es tu amigo.');
+      }
+
+      // Comprobar si ya existe una solicitud de amistad PENDIENTE entre los usuarios
+      const pendingFriendship = await this.friendshipModel.findOne({
+        $or: [
+          { idUser1, idUser2, status: 'pending' },
+          { idUser1: idUser2, idUser2: idUser1, status: 'pending' },
+        ],
+      });
+
+      if (pendingFriendship) {
         throw new ConflictException(
-          'Ya hay una relación de amistad entre estos usuarios. Ya sea pendiente, aceptada.',
+          'Ya hay una solicitud de amistad pendiente con este usuario.',
         );
       }
 
@@ -79,7 +89,6 @@ export class FriendshipService {
         return {
           ok: true,
           message: 'Solicitud de amistad reenviada correctamente',
-          newFriendship: rejectedFriendship,
         };
       }
 
@@ -93,7 +102,6 @@ export class FriendshipService {
       return {
         ok: true,
         message: 'Solicitud de amistad enviada correctamente',
-        newFriendship,
       };
     } catch (error) {
       // Si el error es un ConflictException, lo relanzamos directamente
