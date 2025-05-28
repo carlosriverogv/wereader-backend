@@ -113,26 +113,19 @@ export class UserService {
   }
 
   /**
-   * Busca un usuario por su tag
-   * @param tag El tag del usuario buscado
-   * @description Busca un usuario por su tag
-   * @returns El usuario en caso de encontrarlo, undefined en caso contrario
+   * Busca usuarios por coincidencias en su tag
+   * @param tagFragment Fragmento del tag a buscar
+   * @returns Lista de usuarios con tags que coincidan parcial o totalmente
    */
-  async findByTag(tag: string): Promise<User> {
+  async searchByTag(tagFragment: string): Promise<User[]> {
     try {
-      const user = await this.userModel.findOne({ tag }).exec();
-      if (!user) {
-        throw new NotFoundException(`El usuario con tag '${tag}' no existe.`);
-      }
-      return user;
+      const regex = new RegExp(tagFragment, 'i'); // búsqueda insensible a mayúsculas
+      const users = await this.userModel.find({ tag: regex }).exec();
+      return users;
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw new NotFoundException(error.message);
-      } else {
-        throw new InternalServerErrorException(
-          'Error inesperado buscando el usuario: ' + error,
-        );
-      }
+      throw new InternalServerErrorException(
+        'Error inesperado buscando usuarios: ' + error,
+      );
     }
   }
 

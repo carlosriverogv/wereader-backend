@@ -41,9 +41,9 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('search/:tag')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Obtener el perfil del usuario por TAG' })
-  async findByTag(@Param('tag') tag: string) {
-    return await this.userService.findByTag(tag);
+  @ApiOperation({ summary: 'Buscar usuarios por coincidencia de TAG' })
+  async searchByTag(@Param('tag') tag: string) {
+    return await this.userService.searchByTag(tag);
   }
 
   // Recibir el perfil del usuario por ID
