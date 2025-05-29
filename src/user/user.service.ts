@@ -138,6 +138,7 @@ export class UserService {
 
       // Recorrer las amistades y agregar los IDs de los amigos a la lista de exclusión
       for (const friendship of friendships) {
+        // REVISAR----------
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
         const user1Id = friendship.idUser1.toString();
         // eslint-disable-next-line @typescript-eslint/no-base-to-string

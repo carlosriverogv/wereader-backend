@@ -9,12 +9,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Book } from './entities/book.entity';
 import { Model } from 'mongoose';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class BookService {
   constructor(
     @InjectModel('book')
     private readonly bookModel: Model<Book>,
+    @InjectModel('user')
+    private readonly userModel: Model<User>,
   ) {}
 
   /**
@@ -115,6 +118,88 @@ export class BookService {
     } catch (error) {
       throw new InternalServerErrorException(
         `Error inesperado al buscar los libros más descargados: ` + error,
+      );
+    }
+  }
+
+  /**
+   * @description Servicio para obtener libros recomendados para un usuario con 5 del autor favorito y 15 del género favorito
+   * @param idUserAuth - ID del usuario autenticado
+   * @returns {Promise<Book[]>} - Lista de libros recomendados
+   * @throws NotFoundException - Si el usuario no existe
+   * @throws InternalServerErrorException - Si ocurre un error inesperado
+   */
+  async findRecommendedForUser(idUserAuth: string): Promise<Book[]> {
+    try {
+      const user = await this.userModel.findById(idUserAuth);
+      if (!user) {
+        throw new NotFoundException(
+          `Usuario con ID '${idUserAuth}' no encontrado`,
+        );
+      }
+
+      const { authorFav, genreFav } = user;
+
+      // Buscar hasta 5 libros del autor favorito
+      const booksByAuthor = await this.bookModel
+        .find({ author: authorFav })
+        .sort({ downloads: -1 })
+        .limit(5);
+
+      // Buscar hasta 15 libros del género favorito
+      const booksByGenre = await this.bookModel
+        .find({ genre: genreFav })
+        .sort({ downloads: -1 })
+        .limit(15);
+
+      // Usar un mapa para evitar duplicados
+      const combinedMap = new Map<string, Book>();
+      const finalBooks: Book[] = [];
+
+      // Añadir libros por autor
+      for (const book of booksByAuthor) {
+        if (!combinedMap.has(String(book._id))) {
+          combinedMap.set(String(book._id), book);
+          finalBooks.push(book);
+        }
+      }
+
+      // Añadir libros por género, sin duplicados
+      for (const book of booksByGenre) {
+        if (!combinedMap.has(String(book._id))) {
+          combinedMap.set(String(book._id), book);
+          finalBooks.push(book);
+        }
+      }
+
+      // Si hay menos de 20 libros, rellenar con más libros del género o autor
+      if (finalBooks.length < 20) {
+        const alreadyIncludedIds = Array.from(combinedMap.keys());
+
+        const additionalBooks = await this.bookModel
+          .find({
+            $or: [{ author: authorFav }, { genre: genreFav }],
+            _id: { $nin: alreadyIncludedIds },
+          })
+          .sort({ downloads: -1 })
+          .limit(20 - finalBooks.length);
+
+        for (const book of additionalBooks) {
+          if (!combinedMap.has(String(book._id))) {
+            combinedMap.set(String(book._id), book);
+            finalBooks.push(book);
+          }
+        }
+      }
+
+      return finalBooks.slice(0, 20);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Error inesperado al buscar libros recomendados para el usuario '${idUserAuth}': ` +
+          error,
       );
     }
   }
