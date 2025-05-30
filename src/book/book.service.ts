@@ -82,6 +82,35 @@ export class BookService {
   }
 
   /**
+   * @description Búsqueda en tiempo real por título, autor o género
+   * @param query - Texto a buscar
+   * @returns {Promise<Book[]>} - Lista de hasta 25 libros que coincidan
+   * @throws InternalServerErrorException - Si ocurre un error inesperado
+   */
+  async searchBooks(query: string): Promise<Book[]> {
+    try {
+      const regex = new RegExp(query, 'i');
+
+      const resultado = await this.bookModel
+        .find({
+          $or: [
+            { title: { $regex: regex } },
+            { author: { $regex: regex } },
+            { genre: { $regex: regex } },
+            { isbn: { $regex: regex } },
+          ],
+        })
+        .limit(25);
+
+      return resultado || [];
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error inesperado buscando libros con el texto '${query}': ` + error,
+      );
+    }
+  }
+
+  /**
    * @description Servicio para obtener los 20 libros más recientemente publicados
    * @returns {Promise<Book[]>} - Lista de libros ordenados por fecha de publicación
    * @throws InternalServerErrorException - Si ocurre un error inesperado

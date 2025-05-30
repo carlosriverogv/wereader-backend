@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -36,6 +37,17 @@ export class BookController {
   @ApiOperation({ summary: 'Listar todos los libros' })
   findAll() {
     return this.bookService.findAll();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('search')
+  @ApiOperation({
+    summary: 'Buscar libros por título, autor, género o ISBN',
+    description:
+      'Devuelve una lista de máximo 25 libros que coinciden con el criterio de búsqueda.',
+  })
+  async search(@Query('query') query: string) {
+    return this.bookService.searchBooks(query);
   }
 
   @UseGuards(AuthGuard)
