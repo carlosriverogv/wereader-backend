@@ -34,16 +34,23 @@ export class UserController {
     if (!userId) {
       throw new UnauthorizedException('El token no contiene un userId');
     }
-    return this.userService.findProfileById(req.user.sub);
+    return this.userService.findProfileById(userId);
   }
 
   // Recibir el perfil del usuario por tag
   @UseGuards(AuthGuard)
   @Get('search/:tag')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Obtener el perfil del usuario por TAG' })
-  async findByTag(@Param('tag') tag: string) {
-    return await this.userService.findByTag(tag);
+  @ApiOperation({ summary: 'Buscar usuarios por coincidencia de TAG' })
+  async searchByTag(
+    @Request() req: RequestWithUser,
+    @Param('tag') tag: string,
+  ): Promise<User[]> {
+    const userId = req.user.sub;
+    if (!userId) {
+      throw new UnauthorizedException('El token no contiene un userId');
+    }
+    return await this.userService.searchByTag(userId, tag);
   }
 
   // Recibir el perfil del usuario por ID
