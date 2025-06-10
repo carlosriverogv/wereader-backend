@@ -47,7 +47,7 @@ export class CreateBookDto {
   @IsString({ message: 'La url del epub debe ser un texto' })
   @IsNotEmpty({ message: 'La url del epub es obligatoria' })
   @ApiProperty({
-    example: 'https://www.ejemplo.com/libro.epub',
+    example: 'epubs/',
     description: 'URL del epub del libro',
   })
   readonly epubUrl: string;
@@ -55,7 +55,7 @@ export class CreateBookDto {
   @IsString({ message: 'La url de la portada debe ser un texto' })
   @IsOptional()
   @ApiProperty({
-    example: 'https://www.ejemplo.com/portada.jpg',
+    example: 'covers/',
     description: 'URL de la portada del libro',
   })
   readonly coverUrl?: string;

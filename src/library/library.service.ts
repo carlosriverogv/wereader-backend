@@ -100,7 +100,7 @@ export class LibraryService {
   async addBookToLibrary(
     idUser: string,
     addBookToLibraryDto: AddBookToLibraryDto,
-  ): Promise<Library> {
+  ): Promise<{ ok: boolean; message: string }> {
     try {
       const bookId = addBookToLibraryDto.bookId;
 
@@ -142,7 +142,7 @@ export class LibraryService {
         { new: true },
       );
 
-      return updatedLibrary;
+      return { ok: true, message: 'Libro añadido correctamente' };
     } catch (error) {
       if (
         error instanceof NotFoundException ||

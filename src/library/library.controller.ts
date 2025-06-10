@@ -59,13 +59,13 @@ export class LibraryController {
   }
 
   @UseGuards(AuthGuard)
-  @Patch('addbook')
+  @Patch('addBook')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Añadir un libro a la biblioteca' })
   async addBook(
     @Request() req: RequestWithUser,
     @Body() addBookToLibraryDto: AddBookToLibraryDto,
-  ): Promise<Library> {
+  ): Promise<{ ok: boolean; message: string }> {
     const userId = req.user.sub;
     if (!userId) {
       throw new UnauthorizedException('El token no contiene un userId');

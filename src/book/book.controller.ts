@@ -3,16 +3,21 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  Request,
   UseGuards,
+  UnauthorizedException,
+  Param,
+  Patch,
+  Delete,
+  Query,
 } from '@nestjs/common';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { RequestWithUser } from 'src/auth/interfaces/request-with-user.interface';
+import { Book } from './entities/book.entity';
 
 @ApiTags('Libros')
 @ApiBearerAuth()
@@ -35,9 +40,45 @@ export class BookController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('search')
+  @ApiOperation({
+    summary: 'Buscar libros por título, autor, género o ISBN',
+    description:
+      'Devuelve una lista de máximo 25 libros que coinciden con el criterio de búsqueda.',
+  })
+  async search(@Query('query') query: string) {
+    return this.bookService.searchBooks(query);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('newReleases')
+  @ApiOperation({ summary: 'Lista los 20 libros publicados más recientemente' })
+  async getLatestPublishedBooks() {
+    return this.bookService.findLatestPublished();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('bestsellers')
+  @ApiOperation({ summary: 'Lista los 20 libros más vendidos' })
+  async getTopDownloadedBooks() {
+    return this.bookService.findTopDownloaded();
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('recommended')
+  @ApiOperation({ summary: 'Lista los 20 libros recomendados para el usuario' })
+  async getRecommendedBooks(@Request() req: RequestWithUser): Promise<Book[]> {
+    const userId = req.user.sub;
+    if (!userId) {
+      throw new UnauthorizedException('El token no contiene un userId');
+    }
+    return await this.bookService.findRecommendedForUser(userId);
+  }
+
+  @UseGuards(AuthGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Buscar un libro por ID' })
-  findById(@Param('id') id: string) {
+  findById(@Param('id') id: string): Promise<Book> {
     return this.bookService.findById(id);
   }
 
@@ -63,10 +104,10 @@ export class BookController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('search/gender/:gender')
+  @Get('search/genre/:genre')
   @ApiOperation({ summary: 'Buscar libros por género' })
-  findByGender(@Param('gender') gender: string) {
-    return this.bookService.findByGender(gender);
+  findByGenre(@Param('genre') genre: string) {
+    return this.bookService.findByGenre(genre);
   }
 
   @UseGuards(AuthGuard)

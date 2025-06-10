@@ -4,6 +4,7 @@ import { FriendshipController } from './friendship.controller';
 import { FriendshipSchema } from './entities/friendship.entity';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from 'src/user/entities/user.entity';
+import { SharedLibrarySchema } from 'src/shared-library/entities/shared-library.entity';
 
 @Module({
   imports: [
@@ -15,6 +16,10 @@ import { UserSchema } from 'src/user/entities/user.entity';
       {
         name: 'user',
         schema: UserSchema,
+      },
+      {
+        name: 'sharedLibrary',
+        schema: SharedLibrarySchema,
       },
     ]),
   ],

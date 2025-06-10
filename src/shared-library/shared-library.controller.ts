@@ -6,17 +6,17 @@ import {
   Request,
   UnauthorizedException,
   Get,
-  Delete,
-  Param,
 } from '@nestjs/common';
 import { SharedLibraryService } from './shared-library.service';
 import { CreateSharedLibraryDto } from './dto/create-shared-library.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RequestWithUser } from 'src/auth/interfaces/request-with-user.interface';
+import { SharedLibraryWrapper } from './entities/SharedLibraryWrapper';
+import { DeleteSharedLibraryDto } from './dto/delete-shared-library.dto';
 
 @ApiTags('Bibliotecas compartidas')
-@Controller('sharedlibrary')
+@Controller('sharedLibrary')
 export class SharedLibraryController {
   constructor(private readonly sharedLibraryService: SharedLibraryService) {}
 
@@ -43,7 +43,7 @@ export class SharedLibraryController {
   @Get('sharedWithMe')
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Obtener las bibliotecas compartidas con el usuario autenticado',
+    summary: 'Obtener la biblioteca compartida con el usuario autenticado',
     description:
       'Obtiene las bibliotecas compartidas con el usuario autenticado',
   })
@@ -55,21 +55,42 @@ export class SharedLibraryController {
     return await this.sharedLibraryService.getSharedWithMe(idUserAuth);
   }
 
+  // Obtiene las bibliotecas compartidas por el usuario autenticado
   @UseGuards(AuthGuard)
-  @Delete(':id')
+  @Get('sharedByMe')
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'Eliminar biblioteca compartida',
-    description: 'Elimina la biblioteca compartida con el ID proporcionado',
+    summary: 'Obtener la biblioteca compartidas por el usuario autenticado',
+    description: 'Obtiene la biblioteca compartidas por el usuario autenticado',
   })
-  async deleteSharedLibrary(
+  async getSharedByMe(
     @Request() req: RequestWithUser,
-    @Param('id') idSharedLibrary: string,
+  ): Promise<SharedLibraryWrapper> {
+    const idUserAuth = req.user.sub;
+    if (!idUserAuth) {
+      throw new UnauthorizedException('El token no contiene un ID de usuario');
+    }
+    const sharedLibrary =
+      await this.sharedLibraryService.getSharedByMe(idUserAuth);
+
+    return { sharedLibrary: sharedLibrary ?? null };
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('stopSharingMyLibrary')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Dejar de compartir mi biblioteca' })
+  async stopSharingMyLibrary(
+    @Request() req: RequestWithUser,
+    @Body() dto: DeleteSharedLibraryDto,
   ) {
     const idUserAuth = req.user.sub;
     if (!idUserAuth) {
       throw new UnauthorizedException('El token no contiene un ID de usuario');
     }
-    return await this.sharedLibraryService.deleteSharedLibrary(idSharedLibrary);
+    return await this.sharedLibraryService.deleteSharedLibraryByMe(
+      idUserAuth,
+      dto.idOtherUser,
+    );
   }
 }

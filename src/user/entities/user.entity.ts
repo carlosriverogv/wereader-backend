@@ -47,6 +47,13 @@ export class User extends Document {
   })
   password: string;
 
+  // @Prop({
+  //   required: true,
+  //   enum: ['user', 'admin'],
+  //   default: 'user',
+  // })
+  // role: string;
+
   @Prop({
     required: false,
     minlength: 2,
