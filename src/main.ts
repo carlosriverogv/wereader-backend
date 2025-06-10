@@ -28,11 +28,8 @@ export async function createApp() {
   return app;
 }
 
-// Solo lanza el servidor si se ejecuta directamente
-if (require.main === module) {
-  createApp()
-    .then((app) => app.listen(process.env.PORT ?? 3000))
-    .catch((err) => {
-      console.error('❌ Error al iniciar la aplicación', err);
-    });
-}
+createApp()
+  .then((app) => app.listen(process.env.PORT ?? 3000))
+  .catch((err) => {
+    console.error('❌ Error al iniciar la aplicación', err);
+  });
