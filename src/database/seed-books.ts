@@ -21,7 +21,7 @@ const books = [
     price: 12.5,
     epubUrl: 'epubs/978-84-17347-29-1.epub',
     coverUrl: 'covers/eif-bs-m1.jpg',
-    gender: 'Fantasía',
+    genre: 'Fantasía',
     datePublished: new Date('2006-07-17T00:00:00.000Z'),
     synopsis:
       'Durante mil años han caído cenizas del cielo.\n\nDurante mil años nada ha florecido.\n\nDurante mil años los skaa han sido esclavizados y viven en la miseria, sumidos en un miedo inevitable.\n\nDurante mil años el Lord Legislador ha reinado con poder absoluto, dominando gracias al terror, a sus poderes y a su inmortalidad, ayudado por «obligadores» e «inquisidores», junto a la poderosa magia de la alomancia. Pero los nobles a menudo han tenido trato sexual con jóvenes skaa y, aunque la ley lo prohíbe, algunos de sus bastardos han sobrevivido y heredado los poderes alománticos: son los «nacidos de la bruma» (mistborn). Ahora, Kelsier, el «superviviente», el único que ha logrado huir de los Pozos de Hathsin, ha encontrado a Vin, una pobre chica skaa con mucha suerte... Tal vez los dos, con el mejor equipo criminal jamás reunido, unidos a la rebelión que los skaa intentan desde hace mil años, logren cambiar el mundo y acabar con la atroz mano de hierro del Lord Legislador.',
