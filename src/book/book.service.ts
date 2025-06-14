@@ -100,6 +100,7 @@ export class BookService {
             { isbn: { $regex: regex } },
           ],
         })
+        .sort({ downloads: -1 }) // Ordena por número de ventas
         .limit(25);
 
       return resultado || [];

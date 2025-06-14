@@ -131,7 +131,7 @@ export class LibraryService {
         );
       } else if (updatedLibrary.books.length === previousBookCount) {
         throw new ConflictException(
-          'Compra no realizada. El libro ya está en la biblioteca.',
+          'Compra no realizada. El libro ya está en tu biblioteca.',
         );
       }
 
