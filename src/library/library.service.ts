@@ -130,7 +130,9 @@ export class LibraryService {
           'Error añadiendo el libro a la biblioteca',
         );
       } else if (updatedLibrary.books.length === previousBookCount) {
-        throw new ConflictException('El libro ya está en la biblioteca.');
+        throw new ConflictException(
+          'Compra no realizada. El libro ya está en la biblioteca.',
+        );
       }
 
       // Incrementar downloads del libro en +1 (utilizado para la tienda)
