@@ -41,7 +41,7 @@ export class AuthController {
    * @description Registro de usuario
    * @returns El usuario
    */
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Post('register')
   @ApiOperation({ summary: 'Registrar un usuario (con biblioteca)' })
   async register(@Body() createUserDto: CreateUserDto) {
