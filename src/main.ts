@@ -28,8 +28,14 @@ export async function createApp() {
   return app;
 }
 
+// createApp()
+//   .then((app) => app.listen(process.env.PORT ?? 3000))
+//   .catch((err) => {
+//     console.error('❌ Error al iniciar la aplicación', err);
+//   });
+
 createApp()
-  .then((app) => app.listen(process.env.PORT ?? 3000))
+  .then((app) => app.listen(process.env.PORT ?? 3000, '0.0.0.0'))
   .catch((err) => {
     console.error('❌ Error al iniciar la aplicación', err);
   });

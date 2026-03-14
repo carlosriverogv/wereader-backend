@@ -100,6 +100,7 @@ export class BookService {
             { isbn: { $regex: regex } },
           ],
         })
+        .sort({ downloads: -1 }) // Ordena por número de ventas
         .limit(25);
 
       return resultado || [];
@@ -169,15 +170,15 @@ export class BookService {
 
       const { authorFav, genreFav } = user;
 
-      // Buscar hasta 5 libros del autor favorito
+      // Buscar hasta 5 libros donde el autor contenga el autor favorito
       const booksByAuthor = await this.bookModel
-        .find({ author: authorFav })
+        .find({ author: { $regex: authorFav, $options: 'i' } })
         .sort({ downloads: -1 })
         .limit(5);
 
-      // Buscar hasta 15 libros del género favorito
+      // Buscar hasta 15 libros cuyo género contenga el género favorito
       const booksByGenre = await this.bookModel
-        .find({ genre: genreFav })
+        .find({ genre: { $regex: genreFav, $options: 'i' } })
         .sort({ downloads: -1 })
         .limit(15);
 
@@ -207,7 +208,10 @@ export class BookService {
 
         const additionalBooks = await this.bookModel
           .find({
-            $or: [{ author: authorFav }, { genre: genreFav }],
+            $or: [
+              { author: { $regex: authorFav, $options: 'i' } },
+              { genre: { $regex: genreFav, $options: 'i' } },
+            ],
             _id: { $nin: alreadyIncludedIds },
           })
           .sort({ downloads: -1 })

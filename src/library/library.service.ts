@@ -127,11 +127,11 @@ export class LibraryService {
 
       if (!updatedLibrary) {
         throw new InternalServerErrorException(
-          'Error actualizando la biblioteca',
+          'Error añadiendo el libro a la biblioteca',
         );
       } else if (updatedLibrary.books.length === previousBookCount) {
         throw new ConflictException(
-          'El libro ya está en la biblioteca del usuario',
+          'Compra no realizada. El libro ya está en tu biblioteca.',
         );
       }
 
@@ -142,7 +142,7 @@ export class LibraryService {
         { new: true },
       );
 
-      return { ok: true, message: 'Libro añadido correctamente' };
+      return { ok: true, message: 'Compra realizada correctamente' };
     } catch (error) {
       if (
         error instanceof NotFoundException ||
