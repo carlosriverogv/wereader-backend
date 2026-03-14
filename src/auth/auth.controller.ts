@@ -3,9 +3,10 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Autenticación')
+@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -39,6 +40,7 @@ export class AuthController {
    * @description Registro de usuario
    * @returns El usuario
    */
+  //@UseGuards(AuthGuard)
   @Post('register')
   @ApiOperation({ summary: 'Registrar un usuario (con biblioteca)' })
   async register(@Body() createUserDto: CreateUserDto) {
