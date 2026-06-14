@@ -25,7 +25,7 @@
   DESCRIPCION
 ========================================= -->
 
-<h2>Descripcion</h2>
+<h2>🚀 Descripcion</h2>
 
 <p>
 WeReader API es el backend de una plataforma de lectura digital que permite:
@@ -45,7 +45,7 @@ WeReader API es el backend de una plataforma de lectura digital que permite:
   ARQUITECTURA
 ========================================= -->
 
-<h2>Arquitectura del sistema</h2>
+<h2>🧱 Arquitectura del sistema</h2>
 
 <ul>
   <li><b>App Module</b> &rarr; endpoint raiz de salud/respuesta base</li>
@@ -63,7 +63,7 @@ WeReader API es el backend de una plataforma de lectura digital que permite:
   STACK
 ========================================= -->
 
-<h2>Stack tecnologico</h2>
+<h2>🧠 Stack tecnologico</h2>
 
 <ul>
   <li>NestJS</li>
@@ -110,7 +110,7 @@ La aplicacion usa <code>ValidationPipe</code> global con <code>whitelist: true</
     </tr>
   </thead>
   <tbody>
-    <tr><td>App</td><td>GET</td><td><code>/</code></td><td>No</td><td>Respuesta base de la API</td></tr>
+    <tr><td>App</td><td>GET</td><td><code>/</code></td><td>Si</td><td>Respuesta base de la API</td></tr>
     <tr><td>Auth</td><td>POST</td><td><code>/auth/login</code></td><td>No</td><td>Iniciar sesion</td></tr>
     <tr><td>Auth</td><td>POST</td><td><code>/auth/register</code></td><td>No</td><td>Registrar usuario y crear su biblioteca</td></tr>
     <tr><td>User</td><td>GET</td><td><code>/user/profile</code></td><td>Si</td><td>Obtener perfil del usuario autenticado</td></tr>
@@ -151,32 +151,10 @@ La aplicacion usa <code>ValidationPipe</code> global con <code>whitelist: true</
 <hr/>
 
 <!-- =========================================
- APP
-========================================= -->
-
-<h2>Modulo App</h2>
-
-<details open>
-<summary><b>GET /</b> - Respuesta base de la API</summary>
-
-<p><b>DTO de entrada:</b> No usa DTO.</p>
-
-<b>Request JSON:</b>
-<pre><code>{}</code></pre>
-
-<b>Response JSON:</b>
-<pre><code>"Hello WeReader!"</code></pre>
-
-<p><b>Codigos de error posibles:</b> 500 si ocurre un error inesperado del servidor.</p>
-</details>
-
-<hr/>
-
-<!-- =========================================
  AUTH
 ========================================= -->
 
-<h2>Modulo Auth</h2>
+<h2>🔐 Modulo Auth</h2>
 
 <details>
 <summary><b>POST /auth/login</b> - Iniciar sesion</summary>
@@ -244,7 +222,7 @@ La aplicacion usa <code>ValidationPipe</code> global con <code>whitelist: true</
  USER
 ========================================= -->
 
-<h2>Modulo User</h2>
+<h2>👤 Modulo User</h2>
 
 <details>
 <summary><b>GET /user/profile</b> - Obtener perfil del usuario autenticado</summary>
@@ -352,7 +330,7 @@ La aplicacion usa <code>ValidationPipe</code> global con <code>whitelist: true</
  BOOK
 ========================================= -->
 
-<h2>Modulo Book</h2>
+<h2>📚 Modulo Book</h2>
 
 <details>
 <summary><b>POST /book</b> - Anadir un nuevo libro</summary>
@@ -694,7 +672,7 @@ La aplicacion usa <code>ValidationPipe</code> global con <code>whitelist: true</
  LIBRARY
 ========================================= -->
 
-<h2>Modulo Library</h2>
+<h2>📖 Modulo Library</h2>
 
 <details>
 <summary><b>POST /library</b> - Crear una biblioteca nueva</summary>
@@ -828,7 +806,7 @@ La aplicacion usa <code>ValidationPipe</code> global con <code>whitelist: true</
  FRIENDSHIP
 ========================================= -->
 
-<h2>Modulo Friendship</h2>
+<h2>🤝 Modulo Friendship</h2>
 
 <details>
 <summary><b>POST /friendship</b> - Nueva solicitud de amistad</summary>
@@ -972,7 +950,7 @@ La aplicacion usa <code>ValidationPipe</code> global con <code>whitelist: true</
  SHARED LIBRARY
 ========================================= -->
 
-<h2>Modulo SharedLibrary</h2>
+<h2>📖🤝Modulo SharedLibrary</h2>
 
 <details>
 <summary><b>POST /sharedLibrary</b> - Compartir biblioteca</summary>
@@ -1225,7 +1203,7 @@ La aplicacion usa <code>ValidationPipe</code> global con <code>whitelist: true</
  SWAGGER
 ========================================= -->
 
-<h2>Swagger (OpenAPI)</h2>
+<h2>📡 Swagger (OpenAPI)</h2>
 
 <p>Swagger esta configurado en <code>src/main.ts</code>:</p>
 
@@ -1246,51 +1224,6 @@ Acceso: <code>http://localhost:3000/api/docs</code>
 
 <hr/>
 
-<!-- =========================================
- DIAGRAMA
-========================================= -->
-
-<h2>Arquitectura del sistema</h2>
-
-<pre><code class="language-mermaid">
-graph TD
-  A[Android App] --> B[NestJS API]
-
-  B --> C[Auth]
-  B --> D[User]
-  B --> E[Book]
-  B --> F[Library]
-  B --> G[Friendship]
-  B --> H[SharedLibrary]
-
-  C --> I[(MongoDB)]
-  D --> I
-  E --> I
-  F --> I
-  G --> I
-  H --> I
-</code></pre>
-
-<hr/>
-
-<!-- =========================================
- CIERRE
-========================================= -->
-
-<h2>Futuras mejoras</h2>
-
-<ul>
-  <li>WebSockets en tiempo real</li>
-  <li>Sistema de recomendaciones IA</li>
-  <li>Pagos reales (Stripe / Bizum)</li>
-  <li>Microservicios</li>
-  <li>Redis cache</li>
-</ul>
-
-<hr/>
-
-<!-- ========================================= -->
-
 <p align="center">
-  <b>WeReader API - Proyecto academico | 2026</b>
+  <b>WeReader API - Proyecto | 2026</b>
 </p>
